@@ -56,8 +56,8 @@
 
     <!-- Top Navigation Bar -->
     <header class="z-30 w-full px-12 pt-7 flex items-center justify-between border-b border-white/[0.04] pb-5">
-      <!-- Minimal Horizontal Text Navigation: "Dashboard | Mappings | About" -->
-      <nav class="flex items-center space-x-3 text-[11px] tracking-[0.2em] uppercase font-semibold text-gray-500">
+      <!-- Primary Navigation: Dashboard | Mappings | Settings -->
+      <nav class="flex items-center space-x-3 text-[11px] tracking-[0.2em] uppercase font-semibold text-gray-500 font-sans">
         <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-tab text-white hover:text-white transition-colors duration-150 flex items-center gap-2 cursor-pointer">
           <span class="w-1.5 h-1.5 rounded-full bg-[#5c68f4]"></span>
           Dashboard
@@ -67,18 +67,14 @@
           Mappings
         </button>
         <span class="text-white/10 select-none">|</span>
-        <button onclick="switchTab('about')" id="nav-about" class="nav-tab text-gray-500 hover:text-white transition-colors duration-150 cursor-pointer">
-          About
+        <button onclick="switchTab('settings')" id="nav-settings" class="nav-tab text-gray-500 hover:text-white transition-colors duration-150 cursor-pointer">
+          Settings
         </button>
       </nav>
 
-      <!-- Top Right Clean System Specs -->
-      <div class="flex items-center gap-4 text-[10px] tracking-[0.2em] uppercase font-mono text-gray-500">
-        <span>REF DVC-01</span>
-        <span class="text-white/10">•</span>
-        <span>USB HID INTERCEPTOR</span>
-        <span class="text-white/10">•</span>
-        <span class="text-gray-400">WIN32 HOOK</span>
+      <!-- Top Right: Version Number in Montserrat -->
+      <div class="font-sans font-bold text-xs tracking-[0.2em] uppercase text-gray-400">
+        v1.3.1
       </div>
     </header>
 
@@ -91,66 +87,32 @@
       <div id="view-dashboard" class="tab-view w-full h-full flex relative transition-opacity duration-200">
         
         <!-- Left Side: Hero Typography & Controls (~58% width) -->
-        <div class="w-7/12 h-full flex flex-col justify-between px-14 py-10 z-20">
+        <div class="w-7/12 h-full flex flex-col justify-center px-14 py-10 z-20">
           
-          <!-- Top Tag & Massive Structural Heading -->
-          <div>
-            <div class="text-[10px] tracking-[0.25em] font-mono uppercase text-gray-500 font-semibold mb-3 flex items-center gap-2">
-              <span class="w-2.5 h-[1px] bg-[#5c68f4]"></span>
-              STUDIO HARDWARE INTEGRATION
-            </div>
-
+          <!-- Vertically Centered Hero Section Content -->
+          <div class="flex flex-col justify-center">
             <!-- Massive Structural Typography: Visual Anchor -->
             <h1 class="font-sans font-black text-6xl lg:text-7xl leading-[0.96] tracking-tight text-white mb-6">
               DaVinci —<br />
               Dial Controller
             </h1>
 
-            <p class="text-xs text-gray-400 font-normal leading-relaxed max-w-sm mb-6">
+            <p class="text-xs text-gray-400 font-normal leading-relaxed max-w-sm mb-8">
               Hardware macro interceptor for rotary encoders. Fluid timeline zooming, frame-by-frame jogging, and micro-drag color parameter adjustments.
             </p>
 
-            <!-- Clean Workspace Toggle Buttons -->
-            <div class="flex flex-col gap-2 mb-6">
-              <span class="text-[10px] font-mono tracking-[0.2em] uppercase text-gray-500 font-semibold">Active Workspace</span>
+            <!-- Sleek Outlined Workspace Toggle Buttons -->
+            <div class="flex flex-col gap-3">
+              <span class="text-[11px] font-sans tracking-[0.2em] uppercase text-gray-400 font-semibold">Active Workspace</span>
               <div class="flex items-center gap-2">
-                <button id="ws-btn-edit" onclick="setWorkspaceMode('edit')" class="px-5 py-2 rounded border border-[#5c68f4] text-[#5c68f4] bg-[#5c68f4]/10 text-xs tracking-wider uppercase font-bold transition-all cursor-pointer">
-                  Edit Page
+                <button id="ws-btn-edit" onclick="setWorkspaceMode('edit')" class="px-5 py-2 rounded-md border border-indigo-500 text-indigo-400 bg-indigo-500/10 text-xs tracking-wider uppercase font-semibold transition-all cursor-pointer">
+                  EDIT PAGE
                 </button>
-                <button id="ws-btn-color" onclick="setWorkspaceMode('color')" class="px-5 py-2 rounded border border-white/10 text-gray-400 hover:text-white hover:border-white/20 text-xs tracking-wider uppercase font-bold transition-all cursor-pointer">
-                  Color Page
+                <button id="ws-btn-color" onclick="setWorkspaceMode('color')" class="px-5 py-2 rounded-md border border-gray-700 bg-transparent text-gray-400 hover:text-white hover:border-gray-600 text-xs tracking-wider uppercase font-semibold transition-all cursor-pointer">
+                  COLOR PAGE
                 </button>
               </div>
             </div>
-          </div>
-
-          <!-- Bottom Left Controls: Outlined Button & Status -->
-          <div class="flex flex-col gap-3 mt-auto">
-            
-            <div class="flex items-center gap-4">
-              <!-- Outlined / Ghost-Style Start/Stop Engine Button -->
-              <button id="engineToggleBtn" onclick="toggleEngine()" class="flex items-center gap-3 px-7 py-3 rounded border border-gray-700 hover:border-gray-400 bg-white/[0.02] hover:bg-white/[0.05] text-gray-200 hover:text-white uppercase tracking-[0.2em] text-[11px] font-semibold transition-all duration-200 active:scale-95 cursor-pointer">
-                <span id="btnIcon" class="w-3.5 h-3.5 flex items-center justify-center text-[#5c68f4]">
-                  <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
-                </span>
-                <span id="btnLabel">Start Engine</span>
-              </button>
-
-              <!-- Status: Active / Offline Text Element -->
-              <div class="flex items-center gap-2.5 px-3.5 py-2 rounded border border-white/[0.04] bg-white/[0.01]">
-                <span id="statusDot" class="w-2 h-2 rounded-full bg-gray-600 transition-colors duration-200"></span>
-                <span id="statusText" class="text-[11px] font-mono tracking-[0.15em] uppercase text-gray-400 font-medium">
-                  Status: <span class="text-gray-500">Offline</span>
-                </span>
-              </div>
-            </div>
-
-            <!-- Focused Window Detection Readout -->
-            <div class="flex items-center gap-2 text-[10px] font-mono tracking-[0.15em] uppercase text-gray-500">
-              <span>TARGET WINDOW:</span>
-              <span id="activeWinChip" class="text-gray-400 truncate max-w-sm normal-case font-mono font-medium">Ready</span>
-            </div>
-
           </div>
 
         </div>
@@ -176,17 +138,11 @@
               <!-- Center Crisp Minimalist Icon -->
               <div class="flex flex-col items-center justify-center text-center">
                 <i data-lucide="sliders" class="w-7 h-7 text-gray-400 group-hover:text-white transition-colors duration-200"></i>
-                <span class="text-[9px] font-mono tracking-[0.25em] uppercase text-gray-600 mt-2 font-medium">ROTARY MACRO</span>
+                <span class="text-[9px] font-sans tracking-[0.25em] uppercase text-gray-600 mt-2 font-medium">ROTARY MACRO</span>
               </div>
 
             </div>
 
-          </div>
-
-          <!-- Understated Action HUD Readout -->
-          <div id="liveActionBadge" class="mt-8 px-4 py-1.5 rounded border border-white/[0.06] bg-[#202126] text-gray-400 text-[10px] font-mono tracking-[0.18em] uppercase flex items-center gap-2 transition-all duration-150">
-            <span class="w-1.5 h-1.5 rounded-full bg-gray-600"></span>
-            <span id="actionBadgeText">Standby</span>
           </div>
 
         </div>
@@ -258,15 +214,15 @@
               </p>
             </div>
 
-            <!-- Card 5: Media Key Navigation -->
+            <!-- Card 5: Media Key Native Passthrough -->
             <div class="p-5 rounded border border-white/[0.06] bg-[#202126] col-span-2">
-              <div class="flex items-center justify-between mb-3 text-[10px] font-mono tracking-[0.2em] uppercase text-amber-400 font-semibold">
-                <span>MEDIA KEYS • TRACK NAVIGATION</span>
-                <i data-lucide="skip-forward" class="w-4 h-4 text-gray-500"></i>
+              <div class="flex items-center justify-between mb-3 text-[10px] font-sans tracking-[0.2em] uppercase text-amber-400 font-semibold">
+                <span>MEDIA KEYS • NATIVE WINDOWS PASSTHROUGH</span>
+                <i data-lucide="music" class="w-4 h-4 text-gray-500"></i>
               </div>
-              <h3 class="text-sm font-semibold text-white">UI View Swapping</h3>
+              <h3 class="text-sm font-semibold text-white">Unbound Track Navigation</h3>
               <p class="text-xs text-gray-400 mt-1 leading-relaxed">
-                Pressing <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-gray-200 font-mono text-[10px]">Previous Track</kbd> or <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-gray-200 font-mono text-[10px]">Next Track</kbd> toggles between Dashboard and About views.
+                <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-gray-200 font-sans text-[10px]">Previous Track</kbd> and <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-gray-200 font-sans text-[10px]">Next Track</kbd> pass through natively to Windows media players.
               </p>
             </div>
 
@@ -282,44 +238,69 @@
       </div>
 
       <!-- ======================================================== -->
-      <!-- VIEW 3: ABOUT (Credits & Version History) -->
+      <!-- VIEW 3: SETTINGS (Credits & Version History) -->
       <!-- ======================================================== -->
-      <div id="view-about" class="tab-view w-full h-full p-12 overflow-y-auto hidden">
+      <div id="view-settings" class="tab-view w-full h-full p-12 overflow-y-auto hidden">
         <div class="max-w-3xl mx-auto space-y-8">
           
-          <div class="border-b border-white/[0.06] pb-4">
-            <span class="text-[10px] tracking-[0.25em] font-mono uppercase text-gray-500 font-semibold">SYSTEM OVERVIEW</span>
-            <h2 class="text-3xl font-bold tracking-tight text-white mt-1">About DaVinci Dial Controller</h2>
-            <p class="text-xs text-gray-400 mt-1">Engineered for video editors and colorists requiring hardware tactile control.</p>
+          <div class="border-b border-white/[0.06] pb-4 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] tracking-[0.25em] font-sans uppercase text-gray-500 font-semibold">SYSTEM OVERVIEW</span>
+              <h2 class="text-3xl font-bold tracking-tight text-white mt-1">DaVinci Dial Controller</h2>
+              <p class="text-xs text-gray-400 mt-1">Engineered for video editors and colorists requiring hardware tactile control.</p>
+            </div>
+            <span class="px-3 py-1 rounded border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 font-mono text-xs font-bold">v1.3.1</span>
           </div>
 
           <!-- Author / Developer Credit Card -->
           <div class="p-6 rounded border border-white/[0.08] bg-[#202126] flex items-center justify-between">
             <div class="flex items-center gap-4">
-              <div class="w-12 h-12 rounded-full bg-[#5c68f4]/15 border border-[#5c68f4]/30 flex items-center justify-center text-[#5c68f4] font-bold text-lg font-mono">
+              <div class="w-12 h-12 rounded-full bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold text-lg font-mono">
                 AK
               </div>
               <div>
-                <span class="text-[10px] font-mono tracking-[0.2em] uppercase text-gray-500 font-semibold">LEAD DEVELOPER</span>
+                <span class="text-[10px] font-sans tracking-[0.2em] uppercase text-gray-500 font-semibold">LEAD DEVELOPER &amp; ENGINEER</span>
                 <h3 class="text-lg font-bold text-white">Abi Kurian Varghese</h3>
-                <p class="text-xs text-gray-400 mt-0.5">Hardware intercept architecture & UI desktop integration</p>
+                <p class="text-xs text-gray-400 mt-0.5">Hardware intercept architecture, Win32 HID hook &amp; UI desktop integration</p>
               </div>
             </div>
-            <div class="px-3 py-1 rounded border border-white/[0.08] bg-white/[0.02] text-[10px] font-mono tracking-[0.15em] uppercase text-gray-400">
+            <div class="px-3 py-1 rounded border border-white/[0.08] bg-white/[0.02] text-[10px] font-sans tracking-[0.15em] uppercase text-gray-400">
               OPEN SOURCE
             </div>
           </div>
 
           <!-- Version History -->
           <div class="space-y-3">
-            <span class="text-[10px] tracking-[0.25em] font-mono uppercase text-gray-500 font-semibold">VERSION HISTORY</span>
+            <span class="text-[10px] tracking-[0.25em] font-sans uppercase text-gray-500 font-semibold">VERSION HISTORY</span>
             
             <div class="space-y-3">
+              <!-- v1.3.1 -->
+              <div class="p-4 rounded border border-indigo-500/30 bg-[#202126] flex items-start gap-4">
+                <span class="px-2 py-1 rounded bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 font-mono text-[10px] font-bold shrink-0">v1.3.1</span>
+                <div>
+                  <h4 class="text-xs font-bold text-white uppercase tracking-wider font-sans">Strict Minimalist UI &amp; Shift-Jog Timing</h4>
+                  <p class="text-xs text-gray-400 mt-1 leading-relaxed">
+                    Clean minimalist dashboard removing redundant footer and engine toggles. Momentary Shift release/press sequence for accurate timeline frame jogging and native media key passthrough.
+                  </p>
+                </div>
+              </div>
+
+              <!-- v1.3.0 -->
+              <div class="p-4 rounded border border-white/[0.06] bg-[#202126] flex items-start gap-4">
+                <span class="px-2 py-1 rounded bg-white/5 border border-white/10 text-gray-300 font-mono text-[10px] font-bold shrink-0">v1.3.0</span>
+                <div>
+                  <h4 class="text-xs font-bold text-white uppercase tracking-wider font-sans">Ergonomic Layout &amp; Outlined Workspace Toggles</h4>
+                  <p class="text-xs text-gray-400 mt-1 leading-relaxed">
+                    Vertically centered hero ergonomics and sleek outlined workspace toggle styling with active indigo feedback.
+                  </p>
+                </div>
+              </div>
+
               <!-- v1.2.0 -->
               <div class="p-4 rounded border border-white/[0.06] bg-[#202126] flex items-start gap-4">
-                <span class="px-2 py-1 rounded bg-[#5c68f4]/10 border border-[#5c68f4]/20 text-[#5c68f4] font-mono text-[10px] font-bold shrink-0">v1.2.0</span>
+                <span class="px-2 py-1 rounded bg-white/5 border border-white/10 text-gray-300 font-mono text-[10px] font-bold shrink-0">v1.2.0</span>
                 <div>
-                  <h4 class="text-xs font-bold text-white uppercase tracking-wider">Hardware Modifiers & Workspace Modes</h4>
+                  <h4 class="text-xs font-bold text-white uppercase tracking-wider font-sans">Hardware Modifiers &amp; Workspace Modes</h4>
                   <p class="text-xs text-gray-400 mt-1 leading-relaxed">
                     Shift-jog powered by direct scan-code keyboard events without modifier bleed. Default micro-drag scrubbing for Color Page, auto-syncing with Shift+6 and Shift+4 shortcuts.
                   </p>
@@ -330,7 +311,7 @@
               <div class="p-4 rounded border border-white/[0.06] bg-[#202126] flex items-start gap-4">
                 <span class="px-2 py-1 rounded bg-white/5 border border-white/10 text-gray-300 font-mono text-[10px] font-bold shrink-0">v1.1.0</span>
                 <div>
-                  <h4 class="text-xs font-bold text-white uppercase tracking-wider">GUI Bridge</h4>
+                  <h4 class="text-xs font-bold text-white uppercase tracking-wider font-sans">GUI Bridge</h4>
                   <p class="text-xs text-gray-400 mt-1 leading-relaxed">
                     Desktop window built with pywebview and Tailwind CSS. Exposes bidirectional API for daemon control, real-time status reflection, and interactive dial HUD feedback.
                   </p>
@@ -341,7 +322,7 @@
               <div class="p-4 rounded border border-white/[0.06] bg-[#202126] flex items-start gap-4">
                 <span class="px-2 py-1 rounded bg-white/5 border border-white/10 text-gray-300 font-mono text-[10px] font-bold shrink-0">v1.0.0</span>
                 <div>
-                  <h4 class="text-xs font-bold text-white uppercase tracking-wider">Initial Engine</h4>
+                  <h4 class="text-xs font-bold text-white uppercase tracking-wider font-sans">Initial Engine</h4>
                   <p class="text-xs text-gray-400 mt-1 leading-relaxed">
                     Win32 WH_KEYBOARD_LL low-level media key hook with ctypes GetForegroundWindow detection. Zero-latency suppression and timeline zoom translation for DaVinci Resolve.
                   </p>
@@ -355,19 +336,6 @@
 
     </main>
 
-    <!-- Bottom Status Bar -->
-    <footer class="w-full px-12 py-3 flex items-center justify-between border-t border-white/[0.04] text-[10px] text-gray-500 font-mono tracking-[0.18em] uppercase z-30 bg-[#18191c]">
-      <div class="flex items-center gap-3">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-        <span>DAEMON STATUS: READY</span>
-        <span class="text-white/10">•</span>
-        <span>SHORTCUTS: SHIFT+4 (EDIT) | SHIFT+6 (COLOR)</span>
-      </div>
-      <div>
-        <span>DAVINCI RESOLVE STUDIO 18 & 19</span>
-      </div>
-    </footer>
-
   </div>
 
   <!-- JavaScript Bridge & UI Controller -->
@@ -375,7 +343,7 @@
     let isRunning = false;
     let currentWorkspace = "edit";
     let dialAngle = 0;
-    const views = ["dashboard", "mappings", "about"];
+    const views = ["dashboard", "mappings", "settings", "about"];
     let currentViewIndex = 0;
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -388,20 +356,32 @@
 
     // Tab Switching Mechanism
     function switchTab(tabName) {
-      views.forEach(v => {
-        const viewEl = document.getElementById("view-" + v);
-        if (viewEl) viewEl.classList.add("hidden");
-      });
+      const viewMap = {
+        dashboard: "view-dashboard",
+        mappings: "view-mappings",
+        settings: "view-settings",
+        about: "view-settings"
+      };
+      const navMap = {
+        dashboard: "nav-dashboard",
+        mappings: "nav-mappings",
+        settings: "nav-settings",
+        about: "nav-settings"
+      };
 
+      document.querySelectorAll(".tab-view").forEach(el => el.classList.add("hidden"));
       document.querySelectorAll(".nav-tab").forEach(el => {
         el.classList.remove("text-white");
         el.classList.add("text-gray-500");
       });
 
-      const activeView = document.getElementById("view-" + tabName);
+      const activeViewId = viewMap[tabName] || "view-" + tabName;
+      const activeNavId = navMap[tabName] || "nav-" + tabName;
+
+      const activeView = document.getElementById(activeViewId);
       if (activeView) activeView.classList.remove("hidden");
 
-      const activeNav = document.getElementById("nav-" + tabName);
+      const activeNav = document.getElementById(activeNavId);
       if (activeNav) {
         activeNav.classList.add("text-white");
         activeNav.classList.remove("text-gray-500");
@@ -460,13 +440,17 @@
       currentWorkspace = mode;
       const btnEdit = document.getElementById("ws-btn-edit");
       const btnColor = document.getElementById("ws-btn-color");
+      if (!btnEdit || !btnColor) return;
+
+      const activeClass = "px-5 py-2 rounded-md border border-indigo-500 text-indigo-400 bg-indigo-500/10 text-xs tracking-wider uppercase font-semibold transition-all cursor-pointer";
+      const inactiveClass = "px-5 py-2 rounded-md border border-gray-700 bg-transparent text-gray-400 hover:text-white hover:border-gray-600 text-xs tracking-wider uppercase font-semibold transition-all cursor-pointer";
 
       if (mode === "color") {
-        btnColor.className = "px-5 py-2 rounded border border-[#5c68f4] text-[#5c68f4] bg-[#5c68f4]/10 text-xs tracking-wider uppercase font-bold transition-all cursor-pointer";
-        btnEdit.className = "px-5 py-2 rounded border border-white/10 text-gray-400 hover:text-white hover:border-white/20 text-xs tracking-wider uppercase font-bold transition-all cursor-pointer";
+        btnColor.className = activeClass;
+        btnEdit.className = inactiveClass;
       } else {
-        btnEdit.className = "px-5 py-2 rounded border border-[#5c68f4] text-[#5c68f4] bg-[#5c68f4]/10 text-xs tracking-wider uppercase font-bold transition-all cursor-pointer";
-        btnColor.className = "px-5 py-2 rounded border border-white/10 text-gray-400 hover:text-white hover:border-white/20 text-xs tracking-wider uppercase font-bold transition-all cursor-pointer";
+        btnEdit.className = activeClass;
+        btnColor.className = inactiveClass;
       }
     }
 
@@ -493,29 +477,26 @@
       const btnLabel = document.getElementById("btnLabel");
       const activeWinChip = document.getElementById("activeWinChip");
 
-      if (isRunning) {
-        statusDot.className = "w-2 h-2 rounded-full bg-emerald-400";
-        statusText.innerHTML = 'Status: <span class="text-emerald-400 font-bold">Active</span>';
-        btnLabel.innerText = "Stop Engine";
-        btnIcon.innerHTML = '<i data-lucide="square" class="w-3.5 h-3.5 fill-current text-rose-400"></i>';
-      } else {
-        statusDot.className = "w-2 h-2 rounded-full bg-gray-600";
-        statusText.innerHTML = 'Status: <span class="text-gray-500 font-normal">Offline</span>';
-        btnLabel.innerText = "Start Engine";
-        btnIcon.innerHTML = '<i data-lucide="play" class="w-3.5 h-3.5 fill-current text-[#5c68f4]"></i>';
+      if (statusDot) {
+        statusDot.className = isRunning ? "w-2 h-2 rounded-full bg-emerald-400" : "w-2 h-2 rounded-full bg-gray-600";
+      }
+      if (statusText) {
+        statusText.innerHTML = isRunning ? 'Status: <span class="text-emerald-400 font-bold">Active</span>' : 'Status: <span class="text-gray-500 font-normal">Offline</span>';
+      }
+      if (btnLabel) {
+        btnLabel.innerText = isRunning ? "Stop Engine" : "Start Engine";
+      }
+      if (btnIcon) {
+        btnIcon.innerHTML = isRunning ? '<i data-lucide="square" class="w-3.5 h-3.5 fill-current text-rose-400"></i>' : '<i data-lucide="play" class="w-3.5 h-3.5 fill-current text-[#5c68f4]"></i>';
       }
 
       if (state.workspace) {
         updateWorkspaceUI(state.workspace);
       }
 
-      if (state.active_window) {
+      if (state.active_window && activeWinChip) {
         activeWinChip.innerText = state.active_window;
-        if (state.is_davinci) {
-          activeWinChip.className = "text-emerald-400 font-mono font-medium";
-        } else {
-          activeWinChip.className = "text-gray-400 font-mono font-medium";
-        }
+        activeWinChip.className = state.is_davinci ? "text-emerald-400 font-mono font-medium" : "text-gray-400 font-mono font-medium";
       }
 
       if (window.lucide) lucide.createIcons();
@@ -540,19 +521,30 @@
       const dialNeedle = document.getElementById("dialNeedle");
 
       if (event.type === "intercepted") {
-        badgeText.innerText = event.action || (event.key + " -> Action");
-        badge.className = "mt-8 px-4 py-1.5 rounded border border-[#5c68f4]/60 bg-[#202126] text-white text-[10px] font-mono tracking-[0.18em] uppercase flex items-center gap-2 transition-all duration-150";
+        if (badgeText) {
+          const actionStr = (event.action || (event.key + " -> Action")).toUpperCase();
+          badgeText.innerText = `• ${actionStr}`;
+        }
+        if (badge) {
+          badge.className = "mt-8 px-5 py-2 rounded-md border border-indigo-500 text-indigo-300 bg-indigo-500/10 text-xs font-sans tracking-wider uppercase flex items-center gap-2.5 transition-all duration-150 shadow-sm shadow-indigo-500/20";
+        }
 
         if (event.key && event.key.includes("up")) {
           dialAngle = (dialAngle + 18) % 360;
         } else if (event.key && event.key.includes("down")) {
           dialAngle = (dialAngle - 18) % 360;
         }
-        dialNeedle.style.transform = `rotate(${dialAngle}deg)`;
-        dialNeedle.style.transformOrigin = "center 96px";
+        if (dialNeedle) {
+          dialNeedle.style.transform = `rotate(${dialAngle}deg)`;
+          dialNeedle.style.transformOrigin = "center 96px";
+        }
       } else if (event.type === "passthrough") {
-        badgeText.innerText = "PASSTHROUGH • MASTER AUDIO";
-        badge.className = "mt-8 px-4 py-1.5 rounded border border-white/[0.06] bg-[#202126] text-gray-400 text-[10px] font-mono tracking-[0.18em] uppercase flex items-center gap-2 transition-all duration-150";
+        if (badgeText) {
+          badgeText.innerText = "• PASSTHROUGH [MASTER AUDIO]";
+        }
+        if (badge) {
+          badge.className = "mt-8 px-5 py-2 rounded-md border border-gray-700 bg-transparent text-gray-400 text-xs font-sans tracking-wider uppercase flex items-center gap-2.5 transition-all duration-150";
+        }
       }
     };
 
@@ -560,11 +552,16 @@
     function testSpinAnimation() {
       dialAngle += 36;
       const dialNeedle = document.getElementById("dialNeedle");
-      dialNeedle.style.transform = `rotate(${dialAngle}deg)`;
-      dialNeedle.style.transformOrigin = "center 96px";
+      if (dialNeedle) {
+        dialNeedle.style.transform = `rotate(${dialAngle}deg)`;
+        dialNeedle.style.transformOrigin = "center 96px";
+      }
 
       const badgeText = document.getElementById("actionBadgeText");
-      badgeText.innerText = currentWorkspace === "color" ? "COLOR SCRUB [DRAG +15PX]" : "TIMELINE ZOOM IN [CTRL + =]";
+      if (badgeText) {
+        const actionStr = currentWorkspace === "color" ? "COLOR SCRUB [DRAG +15PX]" : "TIMELINE ZOOM IN [CTRL + =]";
+        badgeText.innerText = `• ${actionStr}`;
+      }
     }
   </script>
 </body>
