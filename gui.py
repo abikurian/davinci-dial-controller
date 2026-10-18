@@ -42,13 +42,19 @@ class BridgeApi:
             controller.start_engine()
         return self.get_status()
 
+    def set_workspace(self, mode: str) -> dict:
+        """Set active workspace ('edit' or 'color') from UI toggle."""
+        controller.set_workspace(mode)
+        return self.get_status()
+
     def get_status(self) -> dict:
-        """Query real-time status of the engine and active window."""
+        """Query real-time status of the engine, workspace, and active window."""
         running = controller.is_running()
         active_win = controller.get_active_window_title() if running else ""
         return {
             "running": running,
             "status": "Active" if running else "Offline",
+            "workspace": controller.get_workspace(),
             "active_window": active_win if active_win else ("DaVinci Resolve" if running else "None"),
             "is_davinci": controller.is_davinci_resolve(active_win) if running else False,
         }
@@ -89,7 +95,7 @@ def main():
         width=1120,
         height=720,
         min_size=(960, 620),
-        background_color="#1e1f26",
+        background_color="#18191c",
     )
 
     api.set_window(window)
