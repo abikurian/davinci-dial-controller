@@ -107,4 +107,4 @@ if __name__ == '__main__':
     window.events.closing += on_closing
 
     # Launch the webview desktop app with debug enabled
-    webview.start(debug=True)
+    webview.start(debug=False)
