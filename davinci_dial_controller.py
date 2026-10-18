@@ -37,16 +37,29 @@ pyautogui.PAUSE = 0.0
 pyautogui.FAILSAFE = False
 
 # ---------------------------------------------------------
-# Windows API Setup (ctypes)
+# Windows API Setup (ctypes) & Virtual-Key Codes
 # ---------------------------------------------------------
 user32 = ctypes.windll.user32
 
-# Function prototypes for GetForegroundWindow and GetWindowTextW
+# Virtual-Key codes for modifier keys
+VK_SHIFT = 0x10
+VK_MENU = 0x12  # Alt key
+
+# Function prototypes for GetForegroundWindow, GetWindowTextW, and GetAsyncKeyState
 user32.GetForegroundWindow.argtypes = []
 user32.GetForegroundWindow.restype = wintypes.HWND
 
 user32.GetWindowTextW.argtypes = [wintypes.HWND, wintypes.LPWSTR, ctypes.c_int]
 user32.GetWindowTextW.restype = ctypes.c_int
+
+user32.GetAsyncKeyState.argtypes = [ctypes.c_int]
+user32.GetAsyncKeyState.restype = ctypes.c_short
+
+
+def is_key_held(vk_code: int) -> bool:
+    """Return True if the specified virtual-key is physically held down."""
+    return (ctypes.windll.user32.GetAsyncKeyState(vk_code) & 0x8000) != 0
+
 
 TARGET_WINDOW_KEYWORD = "davinci resolve"
 
@@ -104,6 +117,10 @@ def action_worker() -> None:
         timestamp = get_timestamp()
 
         try:
+            # Forcefully release physical modifier keys to prevent modifier bleed
+            pyautogui.keyUp("shift")
+            pyautogui.keyUp("alt")
+
             if action_type == "zoom_in":
                 # DaVinci Resolve Timeline Zoom In: Ctrl + =
                 pyautogui.hotkey("ctrl", "=")
@@ -173,15 +190,15 @@ def on_key_event(event: keyboard.KeyboardEvent) -> bool:
         # Route to DaVinci Resolve:
         # Fire the shortcut only on key down/press (avoid duplicating on key release)
         if event.event_type == keyboard.KEY_DOWN:
-            # Check modifier keys: Shift for timeline jog, Alt for color scrub
-            if keyboard.is_pressed("shift"):
+            # Check modifier keys via GetAsyncKeyState: Shift for timeline jog, Alt for color scrub
+            if is_key_held(VK_SHIFT):
                 if key_name in ("volume up", "volume_up"):
                     action_type = "jog_right"
                 elif key_name in ("volume down", "volume_down"):
                     action_type = "jog_left"
                 else:
                     action_type = TARGET_KEYS[key_name]
-            elif keyboard.is_pressed("alt"):
+            elif is_key_held(VK_MENU):
                 if key_name in ("volume up", "volume_up"):
                     action_type = "hover_scrub_up"
                 elif key_name in ("volume down", "volume_down"):
