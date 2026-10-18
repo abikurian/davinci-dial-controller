@@ -59,12 +59,25 @@ class BridgeApi:
             "is_davinci": controller.is_davinci_resolve(active_win) if running else False,
         }
 
+    def switch_page(self, direction: str) -> dict:
+        """Switch between views ('left' / 'right' or 'dashboard' / 'about')."""
+        if self._window is not None:
+            try:
+                self._window.evaluate_js(f"window.onSwitchPage && window.onSwitchPage('{direction}');")
+            except Exception:
+                pass
+        return {"direction": direction}
+
     def on_event_from_engine(self, event_data: dict) -> None:
         """Callback from davinci_dial_controller to push real-time events to JS."""
         if self._window is None:
             return
         
         try:
+            if event_data.get("type") == "switch_page":
+                direction = event_data.get("direction", "right")
+                self.switch_page(direction)
+
             # Safely evaluate JS on the UI thread
             payload = json.dumps(event_data)
             self._window.evaluate_js(f"window.onEngineEvent && window.onEngineEvent({payload});")

@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DaVinci — Dial Controller</title>
-  <!-- Google Fonts: Inter -->
+  <!-- Google Fonts: Montserrat & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
@@ -17,7 +17,7 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'sans-serif'],
+            sans: ['Montserrat', 'sans-serif'],
             mono: ['JetBrains Mono', 'monospace'],
           },
           colors: {
@@ -37,12 +37,12 @@
     /* Custom industrial scrollbars */
     ::-webkit-scrollbar { width: 3px; height: 3px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
 
-    /* Understated realistic hardware shadows (Logitech/SteelSeries aesthetic) */
+    /* Understated realistic hardware shadows */
     .hardware-shadow {
-      box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.06);
+      box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.05);
     }
     .inner-hardware-shadow {
       box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.04);
@@ -54,9 +54,9 @@
   <!-- Main Container -->
   <div class="relative w-full h-full flex flex-col justify-between">
 
-    <!-- Top Navigation Bar (Industrial Minimalist) -->
+    <!-- Top Navigation Bar -->
     <header class="z-30 w-full px-12 pt-7 flex items-center justify-between border-b border-white/[0.04] pb-5">
-      <!-- Minimal Horizontal Text Navigation: "Dashboard | Mappings | Settings" -->
+      <!-- Minimal Horizontal Text Navigation: "Dashboard | Mappings | About" -->
       <nav class="flex items-center space-x-3 text-[11px] tracking-[0.2em] uppercase font-semibold text-gray-500">
         <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-tab text-white hover:text-white transition-colors duration-150 flex items-center gap-2 cursor-pointer">
           <span class="w-1.5 h-1.5 rounded-full bg-[#5c68f4]"></span>
@@ -67,14 +67,16 @@
           Mappings
         </button>
         <span class="text-white/10 select-none">|</span>
-        <button onclick="switchTab('settings')" id="nav-settings" class="nav-tab text-gray-500 hover:text-white transition-colors duration-150 cursor-pointer">
-          Settings
+        <button onclick="switchTab('about')" id="nav-about" class="nav-tab text-gray-500 hover:text-white transition-colors duration-150 cursor-pointer">
+          About
         </button>
       </nav>
 
-      <!-- Top Right Clean Device Specs -->
+      <!-- Top Right Clean System Specs -->
       <div class="flex items-center gap-4 text-[10px] tracking-[0.2em] uppercase font-mono text-gray-500">
-        <span>REF: DVC-01 // USB HID INTERCEPTOR</span>
+        <span>REF DVC-01</span>
+        <span class="text-white/10">•</span>
+        <span>USB HID INTERCEPTOR</span>
         <span class="text-white/10">•</span>
         <span class="text-gray-400">WIN32 HOOK</span>
       </div>
@@ -84,41 +86,48 @@
     <main class="relative flex-1 w-full flex overflow-hidden">
 
       <!-- ======================================================== -->
-      <!-- TAB 1: DASHBOARD (SteelSeries / Logitech Showcase Layout) -->
+      <!-- VIEW 1: DASHBOARD (SteelSeries / Logitech Showcase) -->
       <!-- ======================================================== -->
       <div id="view-dashboard" class="tab-view w-full h-full flex relative transition-opacity duration-200">
         
-        <!-- Left Side: Clean Typography & Controls (~58% width) -->
-        <div class="w-7/12 h-full flex flex-col justify-between px-14 py-12 z-20">
+        <!-- Left Side: Hero Typography & Controls (~58% width) -->
+        <div class="w-7/12 h-full flex flex-col justify-between px-14 py-10 z-20">
           
-          <!-- Top Tag & Main Heading -->
+          <!-- Top Tag & Massive Structural Heading -->
           <div>
             <div class="text-[10px] tracking-[0.25em] font-mono uppercase text-gray-500 font-semibold mb-3 flex items-center gap-2">
-              <span class="w-2 h-[1px] bg-gray-500"></span>
-              Studio Integration
+              <span class="w-2.5 h-[1px] bg-[#5c68f4]"></span>
+              STUDIO HARDWARE INTEGRATION
             </div>
 
-            <!-- Ultra-Clean Main Heading -->
-            <h1 class="font-sans font-bold text-5xl leading-[1.08] tracking-tight text-white mb-4">
+            <!-- Massive Structural Typography: Visual Anchor -->
+            <h1 class="font-sans font-black text-6xl lg:text-7xl leading-[0.96] tracking-tight text-white mb-6">
               DaVinci —<br />
               Dial Controller
             </h1>
 
             <p class="text-xs text-gray-400 font-normal leading-relaxed max-w-sm mb-6">
-              Low-latency hardware macro controller. Precision timeline zoom, frame-by-frame jogging, and micro-drag color parameter adjustments.
+              Hardware macro interceptor for rotary encoders. Fluid timeline zooming, frame-by-frame jogging, and micro-drag color parameter adjustments.
             </p>
 
-            <!-- Mode Descriptor Tag -->
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded border border-white/[0.06] bg-white/[0.02] text-[10px] font-mono tracking-[0.15em] uppercase text-gray-400">
-              <span class="text-gray-500">Active Profile:</span>
-              <span id="profileTag" class="text-white font-semibold">Timeline Zoom (Edit)</span>
+            <!-- Clean Workspace Toggle Buttons -->
+            <div class="flex flex-col gap-2 mb-6">
+              <span class="text-[10px] font-mono tracking-[0.2em] uppercase text-gray-500 font-semibold">Active Workspace</span>
+              <div class="flex items-center gap-2">
+                <button id="ws-btn-edit" onclick="setWorkspaceMode('edit')" class="px-5 py-2 rounded border border-[#5c68f4] text-[#5c68f4] bg-[#5c68f4]/10 text-xs tracking-wider uppercase font-bold transition-all cursor-pointer">
+                  Edit Page
+                </button>
+                <button id="ws-btn-color" onclick="setWorkspaceMode('color')" class="px-5 py-2 rounded border border-white/10 text-gray-400 hover:text-white hover:border-white/20 text-xs tracking-wider uppercase font-bold transition-all cursor-pointer">
+                  Color Page
+                </button>
+              </div>
             </div>
           </div>
 
-          <!-- Bottom Left Controls: Ghost Outlined Button & Status -->
-          <div class="flex flex-col gap-4 mt-auto">
+          <!-- Bottom Left Controls: Outlined Button & Status -->
+          <div class="flex flex-col gap-3 mt-auto">
             
-            <div class="flex items-center gap-5">
+            <div class="flex items-center gap-4">
               <!-- Outlined / Ghost-Style Start/Stop Engine Button -->
               <button id="engineToggleBtn" onclick="toggleEngine()" class="flex items-center gap-3 px-7 py-3 rounded border border-gray-700 hover:border-gray-400 bg-white/[0.02] hover:bg-white/[0.05] text-gray-200 hover:text-white uppercase tracking-[0.2em] text-[11px] font-semibold transition-all duration-200 active:scale-95 cursor-pointer">
                 <span id="btnIcon" class="w-3.5 h-3.5 flex items-center justify-center text-[#5c68f4]">
@@ -136,7 +145,7 @@
               </div>
             </div>
 
-            <!-- Focused Window Real-Time Detection -->
+            <!-- Focused Window Detection Readout -->
             <div class="flex items-center gap-2 text-[10px] font-mono tracking-[0.15em] uppercase text-gray-500">
               <span>TARGET WINDOW:</span>
               <span id="activeWinChip" class="text-gray-400 truncate max-w-sm normal-case font-mono font-medium">Ready</span>
@@ -146,7 +155,7 @@
 
         </div>
 
-        <!-- Center-Right: High-Contrast Crisp Visual Block (No Cheesy Glow) -->
+        <!-- Center-Right: High-Contrast Crisp Visual Block -->
         <div class="w-5/12 h-full flex flex-col items-center justify-center relative pr-14 select-none">
           
           <!-- Crisp Dark Hardware Dial Object -->
@@ -155,7 +164,6 @@
             <!-- Precision Tick Marks (SVG Hash Ring) -->
             <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100">
               <circle cx="50" cy="50" r="47" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="0.5" />
-              <!-- Subdued precision ticks -->
               <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.2" stroke-dasharray="0.6 3.6" />
             </svg>
 
@@ -183,32 +191,10 @@
 
         </div>
 
-        <!-- ======================================================== -->
-        <!-- BOTTOM CENTER: WORKSPACE TOGGLE (SteelSeries Variant Style) -->
-        <!-- ======================================================== -->
-        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2">
-          
-          <!-- Two Ghost Tabs: [ EDIT PAGE ] & [ COLOR PAGE ] -->
-          <div class="flex items-center rounded border border-white/[0.08] bg-[#1d1f24] p-1 shadow-lg">
-            <button id="ws-btn-edit" onclick="setWorkspaceMode('edit')" class="px-5 py-1.5 rounded text-[10px] font-mono tracking-[0.2em] uppercase font-bold transition-all duration-150 border border-[#5c68f4] text-[#5c68f4] bg-[#5c68f4]/10 cursor-pointer">
-              [ EDIT PAGE ]
-            </button>
-            <button id="ws-btn-color" onclick="setWorkspaceMode('color')" class="px-5 py-1.5 rounded text-[10px] font-mono tracking-[0.2em] uppercase font-bold transition-all duration-150 border border-transparent text-gray-500 hover:text-gray-300 cursor-pointer">
-              [ COLOR PAGE ]
-            </button>
-          </div>
-
-          <!-- Muted Technical Shortcut Helper -->
-          <span class="text-[9px] font-mono tracking-[0.2em] uppercase text-gray-600">
-            AUTO-SYNC: SHIFT + 4 (EDIT) // SHIFT + 6 (COLOR)
-          </span>
-
-        </div>
-
       </div>
 
       <!-- ======================================================== -->
-      <!-- TAB 2: MAPPINGS (Hardware Configuration Matrix) -->
+      <!-- VIEW 2: MAPPINGS (Hardware Configuration Matrix) -->
       <!-- ======================================================== -->
       <div id="view-mappings" class="tab-view w-full h-full p-12 overflow-y-auto hidden">
         <div class="max-w-4xl mx-auto space-y-6">
@@ -225,7 +211,7 @@
             <!-- Card 1: Edit Page Default -->
             <div class="p-5 rounded border border-white/[0.06] bg-[#202126]">
               <div class="flex items-center justify-between mb-3 text-[10px] font-mono tracking-[0.2em] uppercase text-[#5c68f4] font-semibold">
-                <span>EDIT PAGE // STANDARD SPIN</span>
+                <span>EDIT PAGE • STANDARD SPIN</span>
                 <i data-lucide="zoom-in" class="w-4 h-4 text-gray-500"></i>
               </div>
               <h3 class="text-sm font-semibold text-white">Timeline Zoom In / Out</h3>
@@ -238,7 +224,7 @@
             <!-- Card 2: Color Page Default -->
             <div class="p-5 rounded border border-white/[0.06] bg-[#202126]">
               <div class="flex items-center justify-between mb-3 text-[10px] font-mono tracking-[0.2em] uppercase text-[#5c68f4] font-semibold">
-                <span>COLOR PAGE // STANDARD SPIN</span>
+                <span>COLOR PAGE • STANDARD SPIN</span>
                 <i data-lucide="palette" class="w-4 h-4 text-gray-500"></i>
               </div>
               <h3 class="text-sm font-semibold text-white">Color Parameter Scrub (Default)</h3>
@@ -251,7 +237,7 @@
             <!-- Card 3: Shift + Jog -->
             <div class="p-5 rounded border border-white/[0.06] bg-[#202126]">
               <div class="flex items-center justify-between mb-3 text-[10px] font-mono tracking-[0.2em] uppercase text-emerald-400 font-semibold">
-                <span>ALL PAGES // SHIFT + SPIN</span>
+                <span>ALL PAGES • SHIFT + SPIN</span>
                 <i data-lucide="play-circle" class="w-4 h-4 text-gray-500"></i>
               </div>
               <h3 class="text-sm font-semibold text-white">Timeline Frame Jog (Shift Glitch Free)</h3>
@@ -263,7 +249,7 @@
             <!-- Card 4: Dial Click -->
             <div class="p-5 rounded border border-white/[0.06] bg-[#202126]">
               <div class="flex items-center justify-between mb-3 text-[10px] font-mono tracking-[0.2em] uppercase text-purple-400 font-semibold">
-                <span>ALL PAGES // DIAL CLICK</span>
+                <span>ALL PAGES • DIAL CLICK</span>
                 <i data-lucide="disc" class="w-4 h-4 text-gray-500"></i>
               </div>
               <h3 class="text-sm font-semibold text-white">Timeline Play / Pause</h3>
@@ -272,63 +258,96 @@
               </p>
             </div>
 
+            <!-- Card 5: Media Key Navigation -->
+            <div class="p-5 rounded border border-white/[0.06] bg-[#202126] col-span-2">
+              <div class="flex items-center justify-between mb-3 text-[10px] font-mono tracking-[0.2em] uppercase text-amber-400 font-semibold">
+                <span>MEDIA KEYS • TRACK NAVIGATION</span>
+                <i data-lucide="skip-forward" class="w-4 h-4 text-gray-500"></i>
+              </div>
+              <h3 class="text-sm font-semibold text-white">UI View Swapping</h3>
+              <p class="text-xs text-gray-400 mt-1 leading-relaxed">
+                Pressing <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-gray-200 font-mono text-[10px]">Previous Track</kbd> or <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-gray-200 font-mono text-[10px]">Next Track</kbd> toggles between Dashboard and About views.
+              </p>
+            </div>
+
           </div>
 
           <!-- Passthrough Note -->
           <div class="p-4 rounded border border-white/[0.04] bg-[#202126]/60 text-xs text-gray-400 flex items-center gap-3">
             <i data-lucide="info" class="w-4 h-4 text-gray-500 shrink-0"></i>
-            <span>When non-DaVinci windows are focused, dial controls standard Windows master volume and mute.</span>
+            <span>When non-DaVinci windows are focused, dial controls standard Windows master volume and track keys pass through to media players.</span>
           </div>
 
         </div>
       </div>
 
       <!-- ======================================================== -->
-      <!-- TAB 3: SETTINGS (Industrial Diagnostics) -->
+      <!-- VIEW 3: ABOUT (Credits & Version History) -->
       <!-- ======================================================== -->
-      <div id="view-settings" class="tab-view w-full h-full p-12 overflow-y-auto hidden">
-        <div class="max-w-3xl mx-auto space-y-6">
+      <div id="view-about" class="tab-view w-full h-full p-12 overflow-y-auto hidden">
+        <div class="max-w-3xl mx-auto space-y-8">
           
           <div class="border-b border-white/[0.06] pb-4">
-            <span class="text-[10px] tracking-[0.25em] font-mono uppercase text-gray-500 font-semibold">DIAGNOSTICS</span>
-            <h2 class="text-3xl font-bold tracking-tight text-white mt-1">System & Hook Configuration</h2>
+            <span class="text-[10px] tracking-[0.25em] font-mono uppercase text-gray-500 font-semibold">SYSTEM OVERVIEW</span>
+            <h2 class="text-3xl font-bold tracking-tight text-white mt-1">About DaVinci Dial Controller</h2>
+            <p class="text-xs text-gray-400 mt-1">Engineered for video editors and colorists requiring hardware tactile control.</p>
           </div>
 
-          <!-- Setting item 1: Admin Privilege Reminder -->
-          <div class="p-5 rounded border border-white/[0.06] bg-[#202126] flex items-start gap-4">
-            <div class="w-9 h-9 rounded bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0 text-amber-400">
-              <i data-lucide="shield-alert" class="w-4 h-4"></i>
+          <!-- Author / Developer Credit Card -->
+          <div class="p-6 rounded border border-white/[0.08] bg-[#202126] flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-[#5c68f4]/15 border border-[#5c68f4]/30 flex items-center justify-center text-[#5c68f4] font-bold text-lg font-mono">
+                AK
+              </div>
+              <div>
+                <span class="text-[10px] font-mono tracking-[0.2em] uppercase text-gray-500 font-semibold">LEAD DEVELOPER</span>
+                <h3 class="text-lg font-bold text-white">Abi Kurian Varghese</h3>
+                <p class="text-xs text-gray-400 mt-0.5">Hardware intercept architecture & UI desktop integration</p>
+              </div>
             </div>
-            <div>
-              <h4 class="text-xs font-mono tracking-[0.15em] uppercase text-white font-semibold">ADMINISTRATOR PRIVILEGES (UIPI)</h4>
-              <p class="text-xs text-gray-400 mt-1 leading-relaxed">
-                If DaVinci Resolve runs with Administrator elevation, Windows UIPI prevents input injection from standard user accounts. Run this app as Administrator if controls don't respond.
-              </p>
-            </div>
-          </div>
-
-          <!-- Setting item 2: Low-Level Hook Info -->
-          <div class="p-5 rounded border border-white/[0.06] bg-[#202126] flex items-start gap-4">
-            <div class="w-9 h-9 rounded bg-[#5c68f4]/10 border border-[#5c68f4]/20 flex items-center justify-center shrink-0 text-[#5c68f4]">
-              <i data-lucide="cpu" class="w-4 h-4"></i>
-            </div>
-            <div>
-              <h4 class="text-xs font-mono tracking-[0.15em] uppercase text-white font-semibold">DIRECT WIN32 INTERCEPT</h4>
-              <p class="text-xs text-gray-400 mt-1 leading-relaxed">
-                Uses <code class="text-gray-300 font-mono text-[11px]">WH_KEYBOARD_LL</code> with asynchronous worker queue offloading and native <code class="text-gray-300 font-mono text-[11px]">GetAsyncKeyState</code> for physical modifier state tracking.
-              </p>
+            <div class="px-3 py-1 rounded border border-white/[0.08] bg-white/[0.02] text-[10px] font-mono tracking-[0.15em] uppercase text-gray-400">
+              OPEN SOURCE
             </div>
           </div>
 
-          <!-- Setting item 3: Dial Reaction Test -->
-          <div class="p-5 rounded border border-white/[0.06] bg-[#202126] flex items-center justify-between">
-            <div>
-              <h4 class="text-xs font-mono tracking-[0.15em] uppercase text-white font-semibold">TEST ROTARY RESPONSE</h4>
-              <p class="text-xs text-gray-400 mt-0.5">Simulate a rotary tick without physical hardware.</p>
+          <!-- Version History -->
+          <div class="space-y-3">
+            <span class="text-[10px] tracking-[0.25em] font-mono uppercase text-gray-500 font-semibold">VERSION HISTORY</span>
+            
+            <div class="space-y-3">
+              <!-- v1.2.0 -->
+              <div class="p-4 rounded border border-white/[0.06] bg-[#202126] flex items-start gap-4">
+                <span class="px-2 py-1 rounded bg-[#5c68f4]/10 border border-[#5c68f4]/20 text-[#5c68f4] font-mono text-[10px] font-bold shrink-0">v1.2.0</span>
+                <div>
+                  <h4 class="text-xs font-bold text-white uppercase tracking-wider">Hardware Modifiers & Workspace Modes</h4>
+                  <p class="text-xs text-gray-400 mt-1 leading-relaxed">
+                    Shift-jog powered by direct scan-code keyboard events without modifier bleed. Default micro-drag scrubbing for Color Page, auto-syncing with Shift+6 and Shift+4 shortcuts.
+                  </p>
+                </div>
+              </div>
+
+              <!-- v1.1.0 -->
+              <div class="p-4 rounded border border-white/[0.06] bg-[#202126] flex items-start gap-4">
+                <span class="px-2 py-1 rounded bg-white/5 border border-white/10 text-gray-300 font-mono text-[10px] font-bold shrink-0">v1.1.0</span>
+                <div>
+                  <h4 class="text-xs font-bold text-white uppercase tracking-wider">GUI Bridge</h4>
+                  <p class="text-xs text-gray-400 mt-1 leading-relaxed">
+                    Desktop window built with pywebview and Tailwind CSS. Exposes bidirectional API for daemon control, real-time status reflection, and interactive dial HUD feedback.
+                  </p>
+                </div>
+              </div>
+
+              <!-- v1.0.0 -->
+              <div class="p-4 rounded border border-white/[0.06] bg-[#202126] flex items-start gap-4">
+                <span class="px-2 py-1 rounded bg-white/5 border border-white/10 text-gray-300 font-mono text-[10px] font-bold shrink-0">v1.0.0</span>
+                <div>
+                  <h4 class="text-xs font-bold text-white uppercase tracking-wider">Initial Engine</h4>
+                  <p class="text-xs text-gray-400 mt-1 leading-relaxed">
+                    Win32 WH_KEYBOARD_LL low-level media key hook with ctypes GetForegroundWindow detection. Zero-latency suppression and timeline zoom translation for DaVinci Resolve.
+                  </p>
+                </div>
+              </div>
             </div>
-            <button onclick="testSpinAnimation()" class="px-4 py-2 rounded border border-gray-700 hover:border-gray-400 text-[10px] font-mono tracking-[0.2em] uppercase font-semibold text-gray-300 hover:text-white transition-all cursor-pointer">
-              SIMULATE TICK
-            </button>
           </div>
 
         </div>
@@ -336,14 +355,16 @@
 
     </main>
 
-    <!-- Bottom Status Bar (Industrial Clean) -->
-    <footer class="w-full px-12 py-3.5 flex items-center justify-between border-t border-white/[0.04] text-[10px] text-gray-500 font-mono tracking-[0.18em] uppercase z-30 bg-[#18191c]">
+    <!-- Bottom Status Bar -->
+    <footer class="w-full px-12 py-3 flex items-center justify-between border-t border-white/[0.04] text-[10px] text-gray-500 font-mono tracking-[0.18em] uppercase z-30 bg-[#18191c]">
       <div class="flex items-center gap-3">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-        <span>DAEMON STATUS: READY // WIN32 INTERCEPT</span>
+        <span>DAEMON STATUS: READY</span>
+        <span class="text-white/10">•</span>
+        <span>SHORTCUTS: SHIFT+4 (EDIT) | SHIFT+6 (COLOR)</span>
       </div>
       <div>
-        <span>TARGET: "DAVINCI RESOLVE" (STUDIO 18 & 19)</span>
+        <span>DAVINCI RESOLVE STUDIO 18 & 19</span>
       </div>
     </footer>
 
@@ -354,6 +375,8 @@
     let isRunning = false;
     let currentWorkspace = "edit";
     let dialAngle = 0;
+    const views = ["dashboard", "mappings", "about"];
+    let currentViewIndex = 0;
 
     document.addEventListener("DOMContentLoaded", () => {
       if (window.lucide) {
@@ -363,9 +386,13 @@
       setInterval(checkStatus, 1200);
     });
 
-    // Tab Switching
+    // Tab Switching Mechanism
     function switchTab(tabName) {
-      document.querySelectorAll(".tab-view").forEach(el => el.classList.add("hidden"));
+      views.forEach(v => {
+        const viewEl = document.getElementById("view-" + v);
+        if (viewEl) viewEl.classList.add("hidden");
+      });
+
       document.querySelectorAll(".nav-tab").forEach(el => {
         el.classList.remove("text-white");
         el.classList.add("text-gray-500");
@@ -379,7 +406,20 @@
         activeNav.classList.add("text-white");
         activeNav.classList.remove("text-gray-500");
       }
+
+      currentViewIndex = views.indexOf(tabName);
+      if (currentViewIndex === -1) currentViewIndex = 0;
     }
+
+    // Called from Python bridge when media track keys are pressed
+    window.onSwitchPage = function(direction) {
+      if (direction === "left") {
+        currentViewIndex = (currentViewIndex - 1 + views.length) % views.length;
+      } else {
+        currentViewIndex = (currentViewIndex + 1) % views.length;
+      }
+      switchTab(views[currentViewIndex]);
+    };
 
     // Toggle Engine (Start / Stop)
     async function toggleEngine() {
@@ -420,16 +460,13 @@
       currentWorkspace = mode;
       const btnEdit = document.getElementById("ws-btn-edit");
       const btnColor = document.getElementById("ws-btn-color");
-      const profileTag = document.getElementById("profileTag");
 
       if (mode === "color") {
-        btnColor.className = "px-5 py-1.5 rounded text-[10px] font-mono tracking-[0.2em] uppercase font-bold transition-all duration-150 border border-[#5c68f4] text-[#5c68f4] bg-[#5c68f4]/10 cursor-pointer";
-        btnEdit.className = "px-5 py-1.5 rounded text-[10px] font-mono tracking-[0.2em] uppercase font-bold transition-all duration-150 border border-transparent text-gray-500 hover:text-gray-300 cursor-pointer";
-        if (profileTag) profileTag.innerText = "Color Parameter Drag (Color)";
+        btnColor.className = "px-5 py-2 rounded border border-[#5c68f4] text-[#5c68f4] bg-[#5c68f4]/10 text-xs tracking-wider uppercase font-bold transition-all cursor-pointer";
+        btnEdit.className = "px-5 py-2 rounded border border-white/10 text-gray-400 hover:text-white hover:border-white/20 text-xs tracking-wider uppercase font-bold transition-all cursor-pointer";
       } else {
-        btnEdit.className = "px-5 py-1.5 rounded text-[10px] font-mono tracking-[0.2em] uppercase font-bold transition-all duration-150 border border-[#5c68f4] text-[#5c68f4] bg-[#5c68f4]/10 cursor-pointer";
-        btnColor.className = "px-5 py-1.5 rounded text-[10px] font-mono tracking-[0.2em] uppercase font-bold transition-all duration-150 border border-transparent text-gray-500 hover:text-gray-300 cursor-pointer";
-        if (profileTag) profileTag.innerText = "Timeline Zoom (Edit)";
+        btnEdit.className = "px-5 py-2 rounded border border-[#5c68f4] text-[#5c68f4] bg-[#5c68f4]/10 text-xs tracking-wider uppercase font-bold transition-all cursor-pointer";
+        btnColor.className = "px-5 py-2 rounded border border-white/10 text-gray-400 hover:text-white hover:border-white/20 text-xs tracking-wider uppercase font-bold transition-all cursor-pointer";
       }
     }
 
@@ -488,9 +525,13 @@
     window.onEngineEvent = function(event) {
       if (!event) return;
 
-      // Automatically sync UI workspace when Shift+6 or Shift+4 is pressed
       if (event.type === "workspace_change" && event.workspace) {
         updateWorkspaceUI(event.workspace);
+        return;
+      }
+
+      if (event.type === "switch_page" && event.direction) {
+        window.onSwitchPage(event.direction);
         return;
       }
 
@@ -502,7 +543,6 @@
         badgeText.innerText = event.action || (event.key + " -> Action");
         badge.className = "mt-8 px-4 py-1.5 rounded border border-[#5c68f4]/60 bg-[#202126] text-white text-[10px] font-mono tracking-[0.18em] uppercase flex items-center gap-2 transition-all duration-150";
 
-        // Rotate needle visually
         if (event.key && event.key.includes("up")) {
           dialAngle = (dialAngle + 18) % 360;
         } else if (event.key && event.key.includes("down")) {
@@ -511,7 +551,7 @@
         dialNeedle.style.transform = `rotate(${dialAngle}deg)`;
         dialNeedle.style.transformOrigin = "center 96px";
       } else if (event.type === "passthrough") {
-        badgeText.innerText = "PASSTHROUGH // MASTER AUDIO";
+        badgeText.innerText = "PASSTHROUGH • MASTER AUDIO";
         badge.className = "mt-8 px-4 py-1.5 rounded border border-white/[0.06] bg-[#202126] text-gray-400 text-[10px] font-mono tracking-[0.18em] uppercase flex items-center gap-2 transition-all duration-150";
       }
     };

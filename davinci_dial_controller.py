@@ -76,6 +76,10 @@ TARGET_KEYS = {
     "volume_down": "zoom_out",
     "volume mute": "play_pause",
     "volume_mute": "play_pause",
+    "previous track": "switch_page_left",
+    "previous_track": "switch_page_left",
+    "next track": "switch_page_right",
+    "next_track": "switch_page_right",
 }
 
 # Queue to offload PyAutoGUI keystroke simulation from the OS hook thread
@@ -235,7 +239,20 @@ def on_key_event(event: keyboard.KeyboardEvent) -> bool:
     in_resolve = is_davinci_resolve(window_title)
 
     if in_resolve:
-        # Route to DaVinci Resolve:
+        # Route Media Key Navigation: previous track / next track
+        if key_name in ("previous track", "previous_track"):
+            if event.event_type == keyboard.KEY_DOWN:
+                dispatch_event({"type": "switch_page", "direction": "left"})
+                print(f"[{get_timestamp()}] [UI NAV] Previous Track -> Switch Page Left")
+            return False
+
+        if key_name in ("next track", "next_track"):
+            if event.event_type == keyboard.KEY_DOWN:
+                dispatch_event({"type": "switch_page", "direction": "right"})
+                print(f"[{get_timestamp()}] [UI NAV] Next Track -> Switch Page Right")
+            return False
+
+        # Route to DaVinci Resolve dial shortcuts:
         # Fire the shortcut only on key down/press (avoid duplicating on key release)
         if event.event_type == keyboard.KEY_DOWN:
             if is_key_held(VK_SHIFT):
