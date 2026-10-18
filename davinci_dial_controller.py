@@ -81,6 +81,28 @@ TARGET_KEYS = {
 # Queue to offload PyAutoGUI keystroke simulation from the OS hook thread
 action_queue: queue.Queue = queue.Queue()
 
+# Workspace Mode State: "edit" (default) or "color"
+current_workspace: str = "edit"
+
+
+def set_workspace(mode: str) -> None:
+    """Set the active workspace mode ('edit' or 'color') and notify listeners."""
+    global current_workspace
+    cleaned = mode.lower().strip()
+    if cleaned in ("edit", "color") and current_workspace != cleaned:
+        current_workspace = cleaned
+        timestamp = get_timestamp()
+        print(f"[{timestamp}] [WORKSPACE] Mode changed to '{current_workspace.upper()}' Page")
+        dispatch_event({
+            "type": "workspace_change",
+            "workspace": current_workspace,
+        })
+
+
+def get_workspace() -> str:
+    """Get the current workspace mode."""
+    return current_workspace
+
 
 def get_active_window_title() -> str:
     """Detect the title of the currently active foreground window in real-time."""
@@ -149,14 +171,12 @@ def action_worker() -> None:
                 pyautogui.moveTo(start_x, start_y)
                 action_desc = "Color Scrub Down [Drag -15px]"
             elif action_type == "jog_right":
-                # Release Shift to prevent cut-point jumping in DaVinci
-                pyautogui.keyUp("shift")
-                pyautogui.press("right")
+                # Low-level keyboard module bypasses modifier bleed without artificial keyUp releases
+                keyboard.send("right")
                 action_desc = "Timeline Jog Right [Right Arrow]"
             elif action_type == "jog_left":
-                # Release Shift to prevent cut-point jumping in DaVinci
-                pyautogui.keyUp("shift")
-                pyautogui.press("left")
+                # Low-level keyboard module bypasses modifier bleed without artificial keyUp releases
+                keyboard.send("left")
                 action_desc = "Timeline Jog Left [Left Arrow]"
             elif action_type == "play_pause":
                 # DaVinci Resolve Play / Pause: Space
@@ -199,6 +219,13 @@ def on_key_event(event: keyboard.KeyboardEvent) -> bool:
     raw_name = event.name or ""
     key_name = raw_name.lower().replace("_", " ")
 
+    # Check for manual page switches in DaVinci Resolve: Shift + 6 (Color) & Shift + 4 (Edit)
+    if event.event_type == keyboard.KEY_DOWN and is_key_held(VK_SHIFT):
+        if raw_name in ("6", "^") or event.scan_code == 7:
+            set_workspace("color")
+        elif raw_name in ("4", "$") or event.scan_code == 5:
+            set_workspace("edit")
+
     # Only process target media dial keys
     if key_name not in TARGET_KEYS:
         return True
@@ -211,23 +238,36 @@ def on_key_event(event: keyboard.KeyboardEvent) -> bool:
         # Route to DaVinci Resolve:
         # Fire the shortcut only on key down/press (avoid duplicating on key release)
         if event.event_type == keyboard.KEY_DOWN:
-            # Check modifier keys via GetAsyncKeyState: Shift for timeline jog, Ctrl for color scrub
             if is_key_held(VK_SHIFT):
+                # Shift modifier: timeline frame jog (using keyboard.send at lower level)
                 if key_name in ("volume up", "volume_up"):
                     action_type = "jog_right"
                 elif key_name in ("volume down", "volume_down"):
                     action_type = "jog_left"
                 else:
-                    action_type = TARGET_KEYS[key_name]
+                    action_type = "play_pause"
             elif is_key_held(VK_CONTROL) or is_key_held(VK_LCONTROL) or is_key_held(VK_RCONTROL):
+                # Ctrl modifier: toggle secondary mode
+                # In Edit mode, Ctrl triggers Color Scrub micro-drag
+                # In Color mode, Ctrl triggers Timeline Zoom
                 if key_name in ("volume up", "volume_up"):
-                    action_type = "hover_scrub_up"
+                    action_type = "zoom_in" if current_workspace == "color" else "hover_scrub_up"
                 elif key_name in ("volume down", "volume_down"):
-                    action_type = "hover_scrub_down"
+                    action_type = "zoom_out" if current_workspace == "color" else "hover_scrub_down"
+                else:
+                    action_type = "play_pause"
+            else:
+                # Default routing without modifiers based on active workspace:
+                # If current_workspace == "color": default to hover_scrub_up / hover_scrub_down (micro-drag)
+                # If current_workspace == "edit": default to zoom_in / zoom_out (timeline zoom)
+                if key_name in ("volume up", "volume_up"):
+                    action_type = "hover_scrub_up" if current_workspace == "color" else "zoom_in"
+                elif key_name in ("volume down", "volume_down"):
+                    action_type = "hover_scrub_down" if current_workspace == "color" else "zoom_out"
+                elif key_name in ("volume mute", "volume_mute"):
+                    action_type = "play_pause"
                 else:
                     action_type = TARGET_KEYS[key_name]
-            else:
-                action_type = TARGET_KEYS[key_name]
 
             action_queue.put((action_type, key_name, window_title))
 
