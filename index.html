@@ -74,7 +74,7 @@
 
       <!-- Top Right: Version Number in Montserrat -->
       <div class="font-sans font-bold text-xs tracking-[0.2em] uppercase text-gray-400">
-        v1.3.1
+        v1.4.0
       </div>
     </header>
 
@@ -90,14 +90,14 @@
         <div class="w-7/12 h-full flex flex-col justify-center px-14 py-10 z-20">
           
           <!-- Vertically Centered Hero Section Content -->
-          <div class="flex flex-col justify-center">
+          <div class="flex flex-col justify-center max-w-2xl">
             <!-- Massive Structural Typography: Visual Anchor -->
-            <h1 class="font-sans font-black text-6xl lg:text-7xl leading-[0.96] tracking-tight text-white mb-6">
+            <h1 class="font-sans font-black text-7xl lg:text-8xl leading-none tracking-tight text-white mb-6">
               DaVinci —<br />
               Dial Controller
             </h1>
 
-            <p class="text-xs text-gray-400 font-normal leading-relaxed max-w-sm mb-8">
+            <p class="text-base lg:text-lg text-gray-400 font-normal leading-relaxed mb-8">
               Hardware macro interceptor for rotary encoders. Fluid timeline zooming, frame-by-frame jogging, and micro-drag color parameter adjustments.
             </p>
 
@@ -146,6 +146,11 @@
 
             </div>
 
+          </div>
+
+          <!-- Vanishing Interaction Hint -->
+          <div id="dialHint" class="mt-8 text-center animate-pulse text-indigo-400 text-xs sm:text-sm font-sans tracking-[0.2em] uppercase font-semibold select-none cursor-pointer" onclick="toggleEngine()">
+            [ CLICK DIAL TO START ENGINE ]
           </div>
 
         </div>
@@ -252,7 +257,7 @@
               <h2 class="text-3xl font-bold tracking-tight text-white mt-1">DaVinci Dial Controller</h2>
               <p class="text-xs text-gray-400 mt-1">Engineered for video editors and colorists requiring hardware tactile control.</p>
             </div>
-            <span class="px-3 py-1 rounded border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 font-mono text-xs font-bold">v1.3.1</span>
+            <span class="px-3 py-1 rounded border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 font-mono text-xs font-bold">v1.4.0</span>
           </div>
 
           <!-- Author / Developer Credit Card -->
@@ -277,9 +282,20 @@
             <span class="text-[10px] tracking-[0.25em] font-sans uppercase text-gray-500 font-semibold">VERSION HISTORY</span>
             
             <div class="space-y-3">
-              <!-- v1.3.1 -->
+              <!-- v1.4.0 -->
               <div class="p-4 rounded border border-indigo-500/30 bg-[#202126] flex items-start gap-4">
-                <span class="px-2 py-1 rounded bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 font-mono text-[10px] font-bold shrink-0">v1.3.1</span>
+                <span class="px-2 py-1 rounded bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 font-mono text-[10px] font-bold shrink-0">v1.4.0</span>
+                <div>
+                  <h4 class="text-xs font-bold text-white uppercase tracking-wider font-sans">Scaled Typography &amp; Vanishing Interaction Hint</h4>
+                  <p class="text-xs text-gray-400 mt-1 leading-relaxed">
+                    Scaled hero typography (text-8xl) with max-w-2xl natural container balance. Interactive pulsing hint that vanishes permanently upon first engine engagement.
+                  </p>
+                </div>
+              </div>
+
+              <!-- v1.3.1 -->
+              <div class="p-4 rounded border border-white/[0.06] bg-[#202126] flex items-start gap-4">
+                <span class="px-2 py-1 rounded bg-white/5 border border-white/10 text-gray-300 font-mono text-[10px] font-bold shrink-0">v1.3.1</span>
                 <div>
                   <h4 class="text-xs font-bold text-white uppercase tracking-wider font-sans">Strict Minimalist UI &amp; Shift-Jog Timing</h4>
                   <p class="text-xs text-gray-400 mt-1 leading-relaxed">
@@ -406,6 +422,12 @@
 
     // Toggle Engine (Start / Stop via interactive rotary dial)
     async function toggleEngine() {
+      // Permanently hide the interaction hint upon first interaction
+      const hint = document.getElementById("dialHint");
+      if (hint) {
+        hint.style.display = "none";
+      }
+
       try {
         if (window.pywebview && window.pywebview.api) {
           const res = await window.pywebview.api.toggle_engine();
@@ -513,6 +535,10 @@
     function updateUIStatus(state) {
       if (!state) return;
       isRunning = Boolean(state.running);
+      if (isRunning) {
+        const hint = document.getElementById("dialHint");
+        if (hint) hint.style.display = "none";
+      }
       updateDialPowerUI(isRunning);
 
       if (state.workspace) {
