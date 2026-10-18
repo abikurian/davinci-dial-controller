@@ -11,8 +11,8 @@ Acts as a background macro controller for media dials / volume knobs:
         * Volume Down         -> Timeline Zoom Out  (Ctrl + -)
         * Shift + Volume Up   -> Timeline Jog Right (Right Arrow)
         * Shift + Volume Down -> Timeline Jog Left  (Left Arrow)
-        * Ctrl + Volume Up   -> Color Scrub Up     (Scroll Up +120)
-        * Ctrl + Volume Down -> Color Scrub Down   (Scroll Down -120)
+        * Ctrl + Volume Up   -> Color Scrub Up     (Drag +15px)
+        * Ctrl + Volume Down -> Color Scrub Down   (Drag -15px)
         * Volume Mute         -> Play / Pause       (Space)
     - Other windows active:
         * Passthrough -> Default Windows volume and mute controls
@@ -136,13 +136,21 @@ def action_worker() -> None:
                 pyautogui.hotkey("ctrl", "-")
                 action_desc = "Timeline Zoom Out [Ctrl + -]"
             elif action_type == "hover_scrub_up":
-                # Universal Color Grading Hover Scrub Up: Scroll +120
-                pyautogui.scroll(120)
-                action_desc = "Color Scrub Up [Scroll +120]"
+                # Universal Color Grading Click-and-Drag Scrub Up (+15px)
+                start_x, start_y = pyautogui.position()
+                pyautogui.mouseDown(button="left")
+                pyautogui.moveTo(start_x + 15, start_y)
+                pyautogui.mouseUp(button="left")
+                pyautogui.moveTo(start_x, start_y)
+                action_desc = "Color Scrub Up [Drag +15px]"
             elif action_type == "hover_scrub_down":
-                # Universal Color Grading Hover Scrub Down: Scroll -120
-                pyautogui.scroll(-120)
-                action_desc = "Color Scrub Down [Scroll -120]"
+                # Universal Color Grading Click-and-Drag Scrub Down (-15px)
+                start_x, start_y = pyautogui.position()
+                pyautogui.mouseDown(button="left")
+                pyautogui.moveTo(start_x - 15, start_y)
+                pyautogui.mouseUp(button="left")
+                pyautogui.moveTo(start_x, start_y)
+                action_desc = "Color Scrub Down [Drag -15px]"
             elif action_type == "jog_right":
                 # DaVinci Resolve Timeline Jog Forward: Right Arrow
                 pyautogui.press("right")
@@ -243,8 +251,8 @@ def main() -> None:
     print("   * Volume Down         -> Timeline Zoom Out  (Ctrl + -)")
     print("   * Shift + Volume Up   -> Timeline Jog Right (Right Arrow)")
     print("   * Shift + Volume Down -> Timeline Jog Left  (Left Arrow)")
-    print("   * Ctrl + Volume Up    -> Color Scrub Up     (Scroll Up +120)")
-    print("   * Ctrl + Volume Down  -> Color Scrub Down   (Scroll Down -120)")
+    print("   * Ctrl + Volume Up    -> Color Scrub Up     (Drag +15px)")
+    print("   * Ctrl + Volume Down  -> Color Scrub Down   (Drag -15px)")
     print("   * Volume Mute         -> Play / Pause       (Space)")
     print(" When other windows are active:")
     print("   * Volume keys pass through to Windows system audio normally.")
