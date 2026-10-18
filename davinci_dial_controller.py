@@ -122,11 +122,6 @@ def action_worker() -> None:
         timestamp = get_timestamp()
 
         try:
-            # Forcefully release physical modifier keys to prevent modifier bleed
-            pyautogui.keyUp("shift")
-            pyautogui.keyUp("ctrl")
-            pyautogui.keyUp("alt")
-
             if action_type == "zoom_in":
                 # DaVinci Resolve Timeline Zoom In: Ctrl + =
                 pyautogui.hotkey("ctrl", "=")
@@ -137,6 +132,7 @@ def action_worker() -> None:
                 action_desc = "Timeline Zoom Out [Ctrl + -]"
             elif action_type == "hover_scrub_up":
                 # Universal Color Grading Click-and-Drag Scrub Up (+15px)
+                # Note: No modifier release here so Ctrl state remains uninterrupted
                 start_x, start_y = pyautogui.position()
                 pyautogui.mouseDown(button="left")
                 pyautogui.moveTo(start_x + 15, start_y)
@@ -145,6 +141,7 @@ def action_worker() -> None:
                 action_desc = "Color Scrub Up [Drag +15px]"
             elif action_type == "hover_scrub_down":
                 # Universal Color Grading Click-and-Drag Scrub Down (-15px)
+                # Note: No modifier release here so Ctrl state remains uninterrupted
                 start_x, start_y = pyautogui.position()
                 pyautogui.mouseDown(button="left")
                 pyautogui.moveTo(start_x - 15, start_y)
@@ -152,11 +149,13 @@ def action_worker() -> None:
                 pyautogui.moveTo(start_x, start_y)
                 action_desc = "Color Scrub Down [Drag -15px]"
             elif action_type == "jog_right":
-                # DaVinci Resolve Timeline Jog Forward: Right Arrow
+                # Release Shift to prevent cut-point jumping in DaVinci
+                pyautogui.keyUp("shift")
                 pyautogui.press("right")
                 action_desc = "Timeline Jog Right [Right Arrow]"
             elif action_type == "jog_left":
-                # DaVinci Resolve Timeline Jog Backward: Left Arrow
+                # Release Shift to prevent cut-point jumping in DaVinci
+                pyautogui.keyUp("shift")
                 pyautogui.press("left")
                 action_desc = "Timeline Jog Left [Left Arrow]"
             elif action_type == "play_pause":
