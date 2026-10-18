@@ -7,11 +7,13 @@ Acts as a background macro controller for media dials / volume knobs:
 - Routing:
     - DaVinci Resolve active:
         * Suppresses Windows audio adjustments
-        * Volume Up         -> Timeline Zoom In  (Ctrl + =)
-        * Volume Down       -> Timeline Zoom Out (Ctrl + -)
-        * Alt + Volume Up   -> Color Scrub Up    (Scroll Up +120)
-        * Alt + Volume Down -> Color Scrub Down  (Scroll Down -120)
-        * Volume Mute       -> Play / Pause      (Space)
+        * Volume Up           -> Timeline Zoom In   (Ctrl + =)
+        * Volume Down         -> Timeline Zoom Out  (Ctrl + -)
+        * Shift + Volume Up   -> Timeline Jog Right (Right Arrow)
+        * Shift + Volume Down -> Timeline Jog Left  (Left Arrow)
+        * Alt + Volume Up     -> Color Scrub Up     (Scroll Up +120)
+        * Alt + Volume Down   -> Color Scrub Down   (Scroll Down -120)
+        * Volume Mute         -> Play / Pause       (Space)
     - Other windows active:
         * Passthrough -> Default Windows volume and mute controls
 """
@@ -118,6 +120,14 @@ def action_worker() -> None:
                 # Universal Color Grading Hover Scrub Down: Scroll -120
                 pyautogui.scroll(-120)
                 action_desc = "Color Scrub Down [Scroll -120]"
+            elif action_type == "jog_right":
+                # DaVinci Resolve Timeline Jog Forward: Right Arrow
+                pyautogui.press("right")
+                action_desc = "Timeline Jog Right [Right Arrow]"
+            elif action_type == "jog_left":
+                # DaVinci Resolve Timeline Jog Backward: Left Arrow
+                pyautogui.press("left")
+                action_desc = "Timeline Jog Left [Left Arrow]"
             elif action_type == "play_pause":
                 # DaVinci Resolve Play / Pause: Space
                 pyautogui.press("space")
@@ -163,8 +173,15 @@ def on_key_event(event: keyboard.KeyboardEvent) -> bool:
         # Route to DaVinci Resolve:
         # Fire the shortcut only on key down/press (avoid duplicating on key release)
         if event.event_type == keyboard.KEY_DOWN:
-            # Check if Alt key is currently held down for color grading scrub mode
-            if keyboard.is_pressed("alt"):
+            # Check modifier keys: Shift for timeline jog, Alt for color scrub
+            if keyboard.is_pressed("shift"):
+                if key_name in ("volume up", "volume_up"):
+                    action_type = "jog_right"
+                elif key_name in ("volume down", "volume_down"):
+                    action_type = "jog_left"
+                else:
+                    action_type = TARGET_KEYS[key_name]
+            elif keyboard.is_pressed("alt"):
                 if key_name in ("volume up", "volume_up"):
                     action_type = "hover_scrub_up"
                 elif key_name in ("volume down", "volume_down"):
@@ -199,11 +216,13 @@ def main() -> None:
     print(" DaVinci Resolve Dial Macro Controller (Windows)")
     print("=" * 70)
     print(" Hardware Mappings when DaVinci Resolve is active:")
-    print("   * Volume Up         -> Timeline Zoom In  (Ctrl + =)")
-    print("   * Volume Down       -> Timeline Zoom Out (Ctrl + -)")
-    print("   * Alt + Volume Up   -> Color Scrub Up    (Scroll Up +120)")
-    print("   * Alt + Volume Down -> Color Scrub Down  (Scroll Down -120)")
-    print("   * Volume Mute       -> Play / Pause      (Space)")
+    print("   * Volume Up           -> Timeline Zoom In   (Ctrl + =)")
+    print("   * Volume Down         -> Timeline Zoom Out  (Ctrl + -)")
+    print("   * Shift + Volume Up   -> Timeline Jog Right (Right Arrow)")
+    print("   * Shift + Volume Down -> Timeline Jog Left  (Left Arrow)")
+    print("   * Alt + Volume Up     -> Color Scrub Up     (Scroll Up +120)")
+    print("   * Alt + Volume Down   -> Color Scrub Down   (Scroll Down -120)")
+    print("   * Volume Mute         -> Play / Pause       (Space)")
     print(" When other windows are active:")
     print("   * Volume keys pass through to Windows system audio normally.")
     print("-" * 70)
