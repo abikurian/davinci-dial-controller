@@ -1,15 +1,8 @@
-"""
-DaVinci Dial Controller - Desktop GUI Bridge
-============================================
-Runs the sleek desktop application powered by pywebview and Tailwind CSS.
-Provides bidirectional communication between the HTML/Tailwind frontend
-and the background hardware macro controller engine.
-"""
+print("Initializing GUI...")
 
 import os
 import sys
 import json
-import threading
 import webview
 
 import davinci_dial_controller as controller
@@ -26,7 +19,7 @@ class BridgeApi:
 
     def start_engine(self) -> dict:
         """Start the background hardware controller engine."""
-        success = controller.start_engine()
+        controller.start_engine()
         return self.get_status()
 
     def stop_engine(self) -> dict:
@@ -34,18 +27,27 @@ class BridgeApi:
         controller.stop_engine()
         return self.get_status()
 
-    def toggle_engine(self) -> dict:
-        """Toggle between active and offline state."""
+    def toggle_engine(self) -> bool:
+        """Toggle between active and offline state, returning the new state boolean."""
         if controller.is_running():
             controller.stop_engine()
         else:
             controller.start_engine()
-        return self.get_status()
+        return controller.is_running()
 
     def set_workspace(self, mode: str) -> dict:
         """Set active workspace ('edit' or 'color') from UI toggle."""
         controller.set_workspace(mode)
         return self.get_status()
+
+    def switch_page(self, direction: str) -> dict:
+        """Switch between views ('left' / 'right' or 'dashboard' / 'about')."""
+        if self._window is not None:
+            try:
+                self._window.evaluate_js(f"window.onSwitchPage && window.onSwitchPage('{direction}');")
+            except Exception:
+                pass
+        return {"direction": direction}
 
     def get_status(self) -> dict:
         """Query real-time status of the engine, workspace, and active window."""
@@ -58,15 +60,6 @@ class BridgeApi:
             "active_window": active_win if active_win else ("DaVinci Resolve" if running else "None"),
             "is_davinci": controller.is_davinci_resolve(active_win) if running else False,
         }
-
-    def switch_page(self, direction: str) -> dict:
-        """Switch between views ('left' / 'right' or 'dashboard' / 'about')."""
-        if self._window is not None:
-            try:
-                self._window.evaluate_js(f"window.onSwitchPage && window.onSwitchPage('{direction}');")
-            except Exception:
-                pass
-        return {"direction": direction}
 
     def on_event_from_engine(self, event_data: dict) -> None:
         """Callback from davinci_dial_controller to push real-time events to JS."""
@@ -82,7 +75,6 @@ class BridgeApi:
             payload = json.dumps(event_data)
             self._window.evaluate_js(f"window.onEngineEvent && window.onEngineEvent({payload});")
         except Exception:
-            # Window might be closing or not yet ready
             pass
 
 
@@ -94,7 +86,7 @@ def on_closing():
         pass
 
 
-def main():
+if __name__ == '__main__':
     api = BridgeApi()
     controller.add_event_listener(api.on_event_from_engine)
 
@@ -114,9 +106,5 @@ def main():
     api.set_window(window)
     window.events.closing += on_closing
 
-    # Launch the webview desktop app
-    webview.start(debug=False)
-
-
-if __name__ == "__main__":
-    main()
+    # Launch the webview desktop app with debug enabled
+    webview.start(debug=True)

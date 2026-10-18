@@ -120,8 +120,11 @@
         <!-- Center-Right: High-Contrast Crisp Visual Block -->
         <div class="w-5/12 h-full flex flex-col items-center justify-center relative pr-14 select-none">
           
-          <!-- Crisp Dark Hardware Dial Object -->
-          <div id="hardwareDial" class="relative w-64 h-64 rounded-full bg-[#1e2025] border border-white/[0.08] hardware-shadow flex items-center justify-center cursor-pointer transition-transform duration-300 group" onclick="testSpinAnimation()">
+          <!-- Crisp Dark Hardware Dial Object: Interactive Power Toggle -->
+          <div id="hardwareDial" 
+               class="relative w-64 h-64 rounded-full bg-[#1e2025] border border-white/[0.08] hardware-shadow flex items-center justify-center cursor-pointer transition-all duration-300 opacity-40 grayscale hover:opacity-60 group select-none" 
+               onclick="toggleEngine()"
+               title="Click dial to toggle DaVinci Engine on / off">
             
             <!-- Precision Tick Marks (SVG Hash Ring) -->
             <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100">
@@ -130,15 +133,15 @@
             </svg>
 
             <!-- Inner Matte Knob Bevel -->
-            <div class="relative w-48 h-48 rounded-full bg-[#1b1c22] border border-white/[0.06] inner-hardware-shadow flex items-center justify-center">
+            <div id="innerDialBevel" class="relative w-48 h-48 rounded-full bg-[#1b1c22] border border-white/[0.06] inner-hardware-shadow flex items-center justify-center transition-all duration-300">
               
               <!-- High-Contrast Precision Needle Indicator -->
-              <div id="dialNeedle" class="absolute top-2 w-1.5 h-3.5 rounded-sm bg-[#5c68f4] transition-transform duration-150"></div>
+              <div id="dialNeedle" class="absolute top-2 w-1.5 h-3.5 rounded-sm bg-gray-600 transition-all duration-150"></div>
 
               <!-- Center Crisp Minimalist Icon -->
               <div class="flex flex-col items-center justify-center text-center">
-                <i data-lucide="sliders" class="w-7 h-7 text-gray-400 group-hover:text-white transition-colors duration-200"></i>
-                <span class="text-[9px] font-sans tracking-[0.25em] uppercase text-gray-600 mt-2 font-medium">ROTARY MACRO</span>
+                <i id="dialCenterIcon" data-lucide="sliders" class="w-7 h-7 text-gray-500 transition-colors duration-200"></i>
+                <span id="dialCenterLabel" class="text-[9px] font-sans tracking-[0.25em] uppercase text-gray-500 mt-2 font-medium transition-colors duration-200">ROTARY MACRO</span>
               </div>
 
             </div>
@@ -401,24 +404,64 @@
       switchTab(views[currentViewIndex]);
     };
 
-    // Toggle Engine (Start / Stop)
+    // Toggle Engine (Start / Stop via interactive rotary dial)
     async function toggleEngine() {
       try {
         if (window.pywebview && window.pywebview.api) {
           const res = await window.pywebview.api.toggle_engine();
-          updateUIStatus(res);
+          isRunning = typeof res === "boolean" ? res : Boolean(res && res.running);
         } else {
           // Demo fallback
           isRunning = !isRunning;
-          updateUIStatus({
-            running: isRunning,
-            status: isRunning ? "Active" : "Offline",
-            workspace: currentWorkspace,
-            active_window: isRunning ? "DaVinci Resolve Studio" : "Desktop"
-          });
         }
+        updateDialPowerUI(isRunning);
       } catch (err) {
         console.error("Failed to toggle engine:", err);
+      }
+    }
+
+    // Visual Feedback: Dimmed when offline, glowing accent when active
+    function updateDialPowerUI(active) {
+      const dial = document.getElementById("hardwareDial");
+      const needle = document.getElementById("dialNeedle");
+      const centerIcon = document.getElementById("dialCenterIcon");
+      const centerLabel = document.getElementById("dialCenterLabel");
+      const innerBevel = document.getElementById("innerDialBevel");
+
+      if (!dial) return;
+
+      if (active) {
+        // Active state: remove dimming, add glowing accent & bright needle
+        dial.className = "relative w-64 h-64 rounded-full bg-[#1e2025] border border-indigo-500/40 hardware-shadow flex items-center justify-center cursor-pointer transition-all duration-300 opacity-100 grayscale-0 drop-shadow-[0_0_35px_rgba(92,104,244,0.35)] ring-1 ring-[#5c68f4]/40 hover:scale-[1.01] group select-none";
+        if (needle) {
+          needle.className = "absolute top-2 w-1.5 h-3.5 rounded-sm bg-[#5c68f4] shadow-[0_0_12px_#5c68f4] transition-all duration-150";
+        }
+        if (centerIcon) {
+          centerIcon.className = "w-7 h-7 text-[#5c68f4] transition-colors duration-200";
+        }
+        if (centerLabel) {
+          centerLabel.className = "text-[9px] font-sans tracking-[0.25em] uppercase text-indigo-300 mt-2 font-semibold transition-colors duration-200";
+          centerLabel.innerText = "ENGINE ACTIVE";
+        }
+        if (innerBevel) {
+          innerBevel.className = "relative w-48 h-48 rounded-full bg-[#1b1c22] border border-indigo-500/20 inner-hardware-shadow flex items-center justify-center transition-all duration-300";
+        }
+      } else {
+        // Offline state: dimmed, grayscale styling
+        dial.className = "relative w-64 h-64 rounded-full bg-[#1e2025] border border-white/[0.08] hardware-shadow flex items-center justify-center cursor-pointer transition-all duration-300 opacity-40 grayscale hover:opacity-60 group select-none";
+        if (needle) {
+          needle.className = "absolute top-2 w-1.5 h-3.5 rounded-sm bg-gray-600 shadow-none transition-all duration-150";
+        }
+        if (centerIcon) {
+          centerIcon.className = "w-7 h-7 text-gray-500 transition-colors duration-200";
+        }
+        if (centerLabel) {
+          centerLabel.className = "text-[9px] font-sans tracking-[0.25em] uppercase text-gray-500 mt-2 font-medium transition-colors duration-200";
+          centerLabel.innerText = "ROTARY MACRO";
+        }
+        if (innerBevel) {
+          innerBevel.className = "relative w-48 h-48 rounded-full bg-[#1b1c22] border border-white/[0.06] inner-hardware-shadow flex items-center justify-center transition-all duration-300";
+        }
       }
     }
 
@@ -470,36 +513,11 @@
     function updateUIStatus(state) {
       if (!state) return;
       isRunning = Boolean(state.running);
-
-      const statusDot = document.getElementById("statusDot");
-      const statusText = document.getElementById("statusText");
-      const btnIcon = document.getElementById("btnIcon");
-      const btnLabel = document.getElementById("btnLabel");
-      const activeWinChip = document.getElementById("activeWinChip");
-
-      if (statusDot) {
-        statusDot.className = isRunning ? "w-2 h-2 rounded-full bg-emerald-400" : "w-2 h-2 rounded-full bg-gray-600";
-      }
-      if (statusText) {
-        statusText.innerHTML = isRunning ? 'Status: <span class="text-emerald-400 font-bold">Active</span>' : 'Status: <span class="text-gray-500 font-normal">Offline</span>';
-      }
-      if (btnLabel) {
-        btnLabel.innerText = isRunning ? "Stop Engine" : "Start Engine";
-      }
-      if (btnIcon) {
-        btnIcon.innerHTML = isRunning ? '<i data-lucide="square" class="w-3.5 h-3.5 fill-current text-rose-400"></i>' : '<i data-lucide="play" class="w-3.5 h-3.5 fill-current text-[#5c68f4]"></i>';
-      }
+      updateDialPowerUI(isRunning);
 
       if (state.workspace) {
         updateWorkspaceUI(state.workspace);
       }
-
-      if (state.active_window && activeWinChip) {
-        activeWinChip.innerText = state.active_window;
-        activeWinChip.className = state.is_davinci ? "text-emerald-400 font-mono font-medium" : "text-gray-400 font-mono font-medium";
-      }
-
-      if (window.lucide) lucide.createIcons();
     }
 
     // Real-time Event Receiver from Python evaluate_js
@@ -516,19 +534,9 @@
         return;
       }
 
-      const badge = document.getElementById("liveActionBadge");
-      const badgeText = document.getElementById("actionBadgeText");
       const dialNeedle = document.getElementById("dialNeedle");
 
       if (event.type === "intercepted") {
-        if (badgeText) {
-          const actionStr = (event.action || (event.key + " -> Action")).toUpperCase();
-          badgeText.innerText = `• ${actionStr}`;
-        }
-        if (badge) {
-          badge.className = "mt-8 px-5 py-2 rounded-md border border-indigo-500 text-indigo-300 bg-indigo-500/10 text-xs font-sans tracking-wider uppercase flex items-center gap-2.5 transition-all duration-150 shadow-sm shadow-indigo-500/20";
-        }
-
         if (event.key && event.key.includes("up")) {
           dialAngle = (dialAngle + 18) % 360;
         } else if (event.key && event.key.includes("down")) {
@@ -538,31 +546,8 @@
           dialNeedle.style.transform = `rotate(${dialAngle}deg)`;
           dialNeedle.style.transformOrigin = "center 96px";
         }
-      } else if (event.type === "passthrough") {
-        if (badgeText) {
-          badgeText.innerText = "• PASSTHROUGH [MASTER AUDIO]";
-        }
-        if (badge) {
-          badge.className = "mt-8 px-5 py-2 rounded-md border border-gray-700 bg-transparent text-gray-400 text-xs font-sans tracking-wider uppercase flex items-center gap-2.5 transition-all duration-150";
-        }
       }
     };
-
-    // Visual dial spin simulation for testing
-    function testSpinAnimation() {
-      dialAngle += 36;
-      const dialNeedle = document.getElementById("dialNeedle");
-      if (dialNeedle) {
-        dialNeedle.style.transform = `rotate(${dialAngle}deg)`;
-        dialNeedle.style.transformOrigin = "center 96px";
-      }
-
-      const badgeText = document.getElementById("actionBadgeText");
-      if (badgeText) {
-        const actionStr = currentWorkspace === "color" ? "COLOR SCRUB [DRAG +15PX]" : "TIMELINE ZOOM IN [CTRL + =]";
-        badgeText.innerText = `• ${actionStr}`;
-      }
-    }
   </script>
 </body>
 </html>

@@ -68,7 +68,7 @@ def is_key_held(vk_code: int) -> bool:
 
 TARGET_WINDOW_KEYWORD = "davinci resolve"
 
-# Keys we are intercepting
+# Keys we are intercepting (rotary dial volume encoder & mute switch)
 TARGET_KEYS = {
     "volume up": "zoom_in",
     "volume_up": "zoom_in",
@@ -76,10 +76,6 @@ TARGET_KEYS = {
     "volume_down": "zoom_out",
     "volume mute": "play_pause",
     "volume_mute": "play_pause",
-    "previous track": "switch_page_left",
-    "previous_track": "switch_page_left",
-    "next track": "switch_page_right",
-    "next_track": "switch_page_right",
 }
 
 # Queue to offload PyAutoGUI keystroke simulation from the OS hook thread
@@ -175,12 +171,16 @@ def action_worker() -> None:
                 pyautogui.moveTo(start_x, start_y)
                 action_desc = "Color Scrub Down [Drag -15px]"
             elif action_type == "jog_right":
-                # Low-level keyboard module bypasses modifier bleed without artificial keyUp releases
+                # Momentarily release shift so DaVinci does not treat Shift+Right as fast-jog / cut jump
+                keyboard.release("shift")
                 keyboard.send("right")
+                keyboard.press("shift")
                 action_desc = "Timeline Jog Right [Right Arrow]"
             elif action_type == "jog_left":
-                # Low-level keyboard module bypasses modifier bleed without artificial keyUp releases
+                # Momentarily release shift so DaVinci does not treat Shift+Left as fast-jog / cut jump
+                keyboard.release("shift")
                 keyboard.send("left")
+                keyboard.press("shift")
                 action_desc = "Timeline Jog Left [Left Arrow]"
             elif action_type == "play_pause":
                 # DaVinci Resolve Play / Pause: Space
@@ -239,19 +239,6 @@ def on_key_event(event: keyboard.KeyboardEvent) -> bool:
     in_resolve = is_davinci_resolve(window_title)
 
     if in_resolve:
-        # Route Media Key Navigation: previous track / next track
-        if key_name in ("previous track", "previous_track"):
-            if event.event_type == keyboard.KEY_DOWN:
-                dispatch_event({"type": "switch_page", "direction": "left"})
-                print(f"[{get_timestamp()}] [UI NAV] Previous Track -> Switch Page Left")
-            return False
-
-        if key_name in ("next track", "next_track"):
-            if event.event_type == keyboard.KEY_DOWN:
-                dispatch_event({"type": "switch_page", "direction": "right"})
-                print(f"[{get_timestamp()}] [UI NAV] Next Track -> Switch Page Right")
-            return False
-
         # Route to DaVinci Resolve dial shortcuts:
         # Fire the shortcut only on key down/press (avoid duplicating on key release)
         if event.event_type == keyboard.KEY_DOWN:
