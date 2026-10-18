@@ -11,8 +11,8 @@ Acts as a background macro controller for media dials / volume knobs:
         * Volume Down         -> Timeline Zoom Out  (Ctrl + -)
         * Shift + Volume Up   -> Timeline Jog Right (Right Arrow)
         * Shift + Volume Down -> Timeline Jog Left  (Left Arrow)
-        * Alt + Volume Up     -> Color Scrub Up     (Scroll Up +120)
-        * Alt + Volume Down   -> Color Scrub Down   (Scroll Down -120)
+        * Ctrl + Volume Up   -> Color Scrub Up     (Scroll Up +120)
+        * Ctrl + Volume Down -> Color Scrub Down   (Scroll Down -120)
         * Volume Mute         -> Play / Pause       (Space)
     - Other windows active:
         * Passthrough -> Default Windows volume and mute controls
@@ -43,9 +43,12 @@ user32 = ctypes.windll.user32
 
 # Virtual-Key codes for modifier keys
 VK_SHIFT = 0x10
-VK_MENU = 0x12   # Alt key (generic)
-VK_LMENU = 0xA4  # Left Alt key
-VK_RMENU = 0xA5  # Right Alt key
+VK_CONTROL = 0x11   # Ctrl key (generic)
+VK_LCONTROL = 0xA2  # Left Ctrl key
+VK_RCONTROL = 0xA3  # Right Ctrl key
+VK_MENU = 0x12      # Alt key (generic)
+VK_LMENU = 0xA4     # Left Alt key
+VK_RMENU = 0xA5     # Right Alt key
 
 # Function prototypes for GetForegroundWindow, GetWindowTextW, and GetAsyncKeyState
 user32.GetForegroundWindow.argtypes = []
@@ -121,6 +124,7 @@ def action_worker() -> None:
         try:
             # Forcefully release physical modifier keys to prevent modifier bleed
             pyautogui.keyUp("shift")
+            pyautogui.keyUp("ctrl")
             pyautogui.keyUp("alt")
 
             if action_type == "zoom_in":
@@ -192,7 +196,7 @@ def on_key_event(event: keyboard.KeyboardEvent) -> bool:
         # Route to DaVinci Resolve:
         # Fire the shortcut only on key down/press (avoid duplicating on key release)
         if event.event_type == keyboard.KEY_DOWN:
-            # Check modifier keys via GetAsyncKeyState: Shift for timeline jog, Alt for color scrub
+            # Check modifier keys via GetAsyncKeyState: Shift for timeline jog, Ctrl for color scrub
             if is_key_held(VK_SHIFT):
                 if key_name in ("volume up", "volume_up"):
                     action_type = "jog_right"
@@ -200,7 +204,7 @@ def on_key_event(event: keyboard.KeyboardEvent) -> bool:
                     action_type = "jog_left"
                 else:
                     action_type = TARGET_KEYS[key_name]
-            elif is_key_held(VK_LMENU) or is_key_held(VK_RMENU):
+            elif is_key_held(VK_CONTROL) or is_key_held(VK_LCONTROL) or is_key_held(VK_RCONTROL):
                 if key_name in ("volume up", "volume_up"):
                     action_type = "hover_scrub_up"
                 elif key_name in ("volume down", "volume_down"):
@@ -239,8 +243,8 @@ def main() -> None:
     print("   * Volume Down         -> Timeline Zoom Out  (Ctrl + -)")
     print("   * Shift + Volume Up   -> Timeline Jog Right (Right Arrow)")
     print("   * Shift + Volume Down -> Timeline Jog Left  (Left Arrow)")
-    print("   * Alt + Volume Up     -> Color Scrub Up     (Scroll Up +120)")
-    print("   * Alt + Volume Down   -> Color Scrub Down   (Scroll Down -120)")
+    print("   * Ctrl + Volume Up    -> Color Scrub Up     (Scroll Up +120)")
+    print("   * Ctrl + Volume Down  -> Color Scrub Down   (Scroll Down -120)")
     print("   * Volume Mute         -> Play / Pause       (Space)")
     print(" When other windows are active:")
     print("   * Volume keys pass through to Windows system audio normally.")
