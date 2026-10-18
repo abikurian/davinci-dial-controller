@@ -169,6 +169,14 @@ def action_worker() -> None:
                 f"[{timestamp}] [INTERCEPTED] Win: \"{window_title}\" | "
                 f"Key: {key_name} -> Action: {action_desc}"
             )
+            dispatch_event({
+                "type": "intercepted",
+                "timestamp": timestamp,
+                "window": window_title,
+                "key": key_name,
+                "action": action_desc,
+                "action_type": action_type,
+            })
         except Exception as err:
             print(f"[{timestamp}] [ERROR] Failed to execute action '{action_type}': {err}", file=sys.stderr)
         finally:
@@ -235,7 +243,80 @@ def on_key_event(event: keyboard.KeyboardEvent) -> bool:
                 f"[{timestamp}] [PASSTHROUGH] Win: \"{display_title}\" | "
                 f"Key: {key_name} -> Windows System Audio"
             )
+            dispatch_event({
+                "type": "passthrough",
+                "timestamp": timestamp,
+                "window": display_title,
+                "key": key_name,
+                "action": "Windows System Audio",
+            })
         return True
+
+
+# ---------------------------------------------------------
+# Lifecycle Management (GUI & Module API)
+# ---------------------------------------------------------
+_engine_running = False
+_worker_thread = None
+_hook_ref = None
+_engine_lock = threading.Lock()
+_event_listeners = []
+
+
+def add_event_listener(callback) -> None:
+    """Register a callback for UI or external event monitoring: callback(event_dict)"""
+    if callback not in _event_listeners:
+        _event_listeners.append(callback)
+
+
+def remove_event_listener(callback) -> None:
+    if callback in _event_listeners:
+        _event_listeners.remove(callback)
+
+
+def dispatch_event(event_dict: dict) -> None:
+    for cb in list(_event_listeners):
+        try:
+            cb(event_dict)
+        except Exception:
+            pass
+
+
+def start_engine() -> bool:
+    """Start the background hardware hook and execution worker."""
+    global _engine_running, _worker_thread, _hook_ref
+    with _engine_lock:
+        if _engine_running:
+            return True
+        _engine_running = True
+        _worker_thread = threading.Thread(target=action_worker, daemon=True)
+        _worker_thread.start()
+        _hook_ref = keyboard.hook(on_key_event, suppress=True)
+        dispatch_event({"type": "engine_state", "running": True})
+        return True
+
+
+def stop_engine() -> bool:
+    """Stop the background hardware hook and execution worker."""
+    global _engine_running, _worker_thread, _hook_ref
+    with _engine_lock:
+        if not _engine_running:
+            return False
+        _engine_running = False
+        if _hook_ref:
+            keyboard.unhook(_hook_ref)
+            _hook_ref = None
+        action_queue.put(None)
+        if _worker_thread:
+            _worker_thread.join(timeout=1.0)
+            _worker_thread = None
+        dispatch_event({"type": "engine_state", "running": False})
+        return True
+
+
+def is_running() -> bool:
+    """Check if the controller engine is currently active."""
+    return _engine_running
 
 
 # ---------------------------------------------------------
@@ -261,12 +342,7 @@ def main() -> None:
     print("-" * 70)
     print(" Controller is active and listening. Press Ctrl + C to exit.\n")
 
-    # Start background execution worker
-    worker_thread = threading.Thread(target=action_worker, daemon=True)
-    worker_thread.start()
-
-    # Install global low-level keyboard hook with suppression enabled
-    hook_ref = keyboard.hook(on_key_event, suppress=True)
+    start_engine()
 
     try:
         # Keep main thread alive waiting for Ctrl + C
@@ -275,10 +351,7 @@ def main() -> None:
     except KeyboardInterrupt:
         print("\nStopping controller...")
     finally:
-        keyboard.unhook(hook_ref)
-        # Flush pending actions and terminate worker
-        action_queue.put(None)
-        worker_thread.join(timeout=1.0)
+        stop_engine()
         print("Controller stopped successfully.")
 
 
