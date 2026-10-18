@@ -43,7 +43,9 @@ user32 = ctypes.windll.user32
 
 # Virtual-Key codes for modifier keys
 VK_SHIFT = 0x10
-VK_MENU = 0x12  # Alt key
+VK_MENU = 0x12   # Alt key (generic)
+VK_LMENU = 0xA4  # Left Alt key
+VK_RMENU = 0xA5  # Right Alt key
 
 # Function prototypes for GetForegroundWindow, GetWindowTextW, and GetAsyncKeyState
 user32.GetForegroundWindow.argtypes = []
@@ -198,7 +200,7 @@ def on_key_event(event: keyboard.KeyboardEvent) -> bool:
                     action_type = "jog_left"
                 else:
                     action_type = TARGET_KEYS[key_name]
-            elif is_key_held(VK_MENU):
+            elif is_key_held(VK_LMENU) or is_key_held(VK_RMENU):
                 if key_name in ("volume up", "volume_up"):
                     action_type = "hover_scrub_up"
                 elif key_name in ("volume down", "volume_down"):
