@@ -78,6 +78,12 @@ class BridgeApi:
             pass
 
 
+def get_resource_path(relative_path):
+    """Get absolute path to resource, works for dev and for PyInstaller"""
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
+
+
 def on_closing():
     """Ensure background threads and hooks stop when user closes the window."""
     try:
@@ -90,7 +96,7 @@ if __name__ == '__main__':
     api = BridgeApi()
     controller.add_event_listener(api.on_event_from_engine)
 
-    html_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "index.html"))
+    html_path = get_resource_path("index.html")
 
     # Create the modern desktop window with dark matte background
     window = webview.create_window(
