@@ -18,6 +18,7 @@ Acts as a background macro controller for media dials / volume knobs:
         * Passthrough -> Default Windows volume and mute controls
 """
 
+import atexit
 import sys
 import time
 import queue
@@ -64,6 +65,18 @@ user32.GetAsyncKeyState.restype = ctypes.c_short
 def is_key_held(vk_code: int) -> bool:
     """Return True if the specified virtual-key is physically held down."""
     return (ctypes.windll.user32.GetAsyncKeyState(vk_code) & 0x8000) != 0
+
+
+def force_release_modifiers() -> None:
+    """Safety mechanism to release stuck modifier keys on shutdown or crash."""
+    for key in ['left shift', 'right shift', 'shift', 'left ctrl', 'right ctrl', 'ctrl', 'alt']:
+        try:
+            keyboard.release(key)
+        except Exception:
+            pass
+
+
+atexit.register(force_release_modifiers)
 
 
 TARGET_WINDOW_KEYWORD = "davinci resolve"
@@ -354,6 +367,7 @@ def stop_engine() -> bool:
         if _worker_thread:
             _worker_thread.join(timeout=1.0)
             _worker_thread = None
+        force_release_modifiers()
         dispatch_event({"type": "engine_state", "running": False})
         return True
 
