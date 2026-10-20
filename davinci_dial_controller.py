@@ -104,8 +104,6 @@ def set_workspace(mode: str) -> None:
     cleaned = mode.lower().strip()
     if cleaned in ("edit", "color") and current_workspace != cleaned:
         current_workspace = cleaned
-        timestamp = get_timestamp()
-        print(f"[{timestamp}] [WORKSPACE] Mode changed to '{current_workspace.upper()}' Page")
         dispatch_event({
             "type": "workspace_change",
             "workspace": current_workspace,
@@ -232,10 +230,6 @@ def action_worker() -> None:
             else:
                 action_desc = f"Unknown action ({action_type})"
 
-            print(
-                f"[{timestamp}] [INTERCEPTED] Win: \"{window_title}\" | "
-                f"Key: {key_name} -> Action: {action_desc}"
-            )
             dispatch_event({
                 "type": "intercepted",
                 "timestamp": timestamp,
@@ -326,10 +320,6 @@ def on_key_event(event: keyboard.KeyboardEvent) -> bool:
         if event.event_type == keyboard.KEY_DOWN:
             timestamp = get_timestamp()
             display_title = window_title if window_title else "<No Title / Desktop>"
-            print(
-                f"[{timestamp}] [PASSTHROUGH] Win: \"{display_title}\" | "
-                f"Key: {key_name} -> Windows System Audio"
-            )
             dispatch_event({
                 "type": "passthrough",
                 "timestamp": timestamp,

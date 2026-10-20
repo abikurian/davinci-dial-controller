@@ -1,5 +1,3 @@
-print("Initializing GUI...")
-
 import os
 import sys
 import json
@@ -112,5 +110,5 @@ if __name__ == '__main__':
     api.set_window(window)
     window.events.closing += on_closing
 
-    # Launch the webview desktop app with debug enabled
+    # Launch the webview desktop app with debug disabled
     webview.start(debug=False)
