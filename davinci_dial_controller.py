@@ -185,15 +185,45 @@ def action_worker() -> None:
                 action_desc = "Color Scrub Down [Drag -15px]"
             elif action_type == "jog_right":
                 # Momentarily release shift so DaVinci does not treat Shift+Right as fast-jog / cut jump
-                keyboard.release("shift")
-                keyboard.send("right")
-                keyboard.press("shift")
+                is_rshift = keyboard.is_pressed('right shift')
+                is_lshift = keyboard.is_pressed('left shift') or keyboard.is_pressed('shift')
+
+                try:
+                    if is_rshift:
+                        keyboard.release('right shift')
+                    if is_lshift:
+                        keyboard.release('left shift')
+                        keyboard.release('shift')
+                        
+                    keyboard.send('right')
+                finally:
+                    # Re-engage only if the user is still physically holding the key
+                    if is_rshift and keyboard.is_pressed('right shift'):
+                        keyboard.press('right shift')
+                    elif is_lshift and keyboard.is_pressed('left shift'):
+                        keyboard.press('left shift')
+
                 action_desc = "Timeline Jog Right [Right Arrow]"
             elif action_type == "jog_left":
                 # Momentarily release shift so DaVinci does not treat Shift+Left as fast-jog / cut jump
-                keyboard.release("shift")
-                keyboard.send("left")
-                keyboard.press("shift")
+                is_rshift = keyboard.is_pressed('right shift')
+                is_lshift = keyboard.is_pressed('left shift') or keyboard.is_pressed('shift')
+
+                try:
+                    if is_rshift:
+                        keyboard.release('right shift')
+                    if is_lshift:
+                        keyboard.release('left shift')
+                        keyboard.release('shift')
+                        
+                    keyboard.send('left')
+                finally:
+                    # Re-engage only if the user is still physically holding the key
+                    if is_rshift and keyboard.is_pressed('right shift'):
+                        keyboard.press('right shift')
+                    elif is_lshift and keyboard.is_pressed('left shift'):
+                        keyboard.press('left shift')
+
                 action_desc = "Timeline Jog Left [Left Arrow]"
             elif action_type == "play_pause":
                 # DaVinci Resolve Play / Pause: Space
