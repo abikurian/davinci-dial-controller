@@ -1,0 +1,16 @@
+{
+  "micro_drag_pixels": 15,
+  "shortcuts": {
+    "edit_page": {
+      "zoom_in": ["ctrl", "="],
+      "zoom_out": ["ctrl", "-"]
+    },
+    "color_page": {
+      "primary_wheels": ["shift", "z"],
+      "log_wheels": ["shift", "x"]
+    }
+  },
+  "preferences": {
+    "default_workspace": "edit"
+  }
+}
