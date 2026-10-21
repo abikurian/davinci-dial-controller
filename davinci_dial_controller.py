@@ -13,7 +13,7 @@ Acts as a background macro controller for media dials / volume knobs:
         * Shift + Volume Down -> Timeline Jog Left  (Left Arrow)
         * Ctrl + Volume Up   -> Color Scrub Up     (Drag +15px)
         * Ctrl + Volume Down -> Color Scrub Down   (Drag -15px)
-        * Volume Mute         -> Play / Pause       (Space)
+        * Volume Mute         -> Play/Pause (Space in Edit) / Reset Param (Middle Click in Color)
     - Other windows active:
         * Passthrough -> Default Windows volume and mute controls
 """
@@ -264,10 +264,14 @@ def action_worker() -> None:
                         keyboard.press('left shift')
 
                 action_desc = "Timeline Jog Left [Left Arrow]"
-            elif action_type == "play_pause":
-                # DaVinci Resolve Play / Pause: Space
-                pyautogui.press("space")
-                action_desc = "Play / Pause [Space]"
+            elif action_type in ("play_pause", "reset_param"):
+                # Physical Dial Switch Click: Space in Edit (Play/Pause) or Middle Click in Color (Reset Wheel Parameter)
+                if current_workspace == "color" or action_type == "reset_param":
+                    pyautogui.middleClick()
+                    action_desc = "Color Parameter Reset [Middle Click]"
+                else:
+                    pyautogui.press("space")
+                    action_desc = "Play / Pause [Space]"
             else:
                 action_desc = f"Unknown action ({action_type})"
 
@@ -327,7 +331,7 @@ def on_key_event(event: keyboard.KeyboardEvent) -> bool:
                 elif key_name in ("volume down", "volume_down"):
                     action_type = "jog_left"
                 else:
-                    action_type = "play_pause"
+                    action_type = "reset_param" if current_workspace == "color" else "play_pause"
             elif is_key_held(VK_CONTROL) or is_key_held(VK_LCONTROL) or is_key_held(VK_RCONTROL):
                 # Ctrl modifier: toggle secondary mode
                 # In Edit mode, Ctrl triggers Color Scrub micro-drag
@@ -337,7 +341,7 @@ def on_key_event(event: keyboard.KeyboardEvent) -> bool:
                 elif key_name in ("volume down", "volume_down"):
                     action_type = "zoom_out" if current_workspace == "color" else "hover_scrub_down"
                 else:
-                    action_type = "play_pause"
+                    action_type = "reset_param" if current_workspace == "color" else "play_pause"
             else:
                 # Default routing without modifiers based on active workspace:
                 # If current_workspace == "color": default to hover_scrub_up / hover_scrub_down (micro-drag)
@@ -347,7 +351,7 @@ def on_key_event(event: keyboard.KeyboardEvent) -> bool:
                 elif key_name in ("volume down", "volume_down"):
                     action_type = "hover_scrub_down" if current_workspace == "color" else "zoom_out"
                 elif key_name in ("volume mute", "volume_mute"):
-                    action_type = "play_pause"
+                    action_type = "reset_param" if current_workspace == "color" else "play_pause"
                 else:
                     action_type = TARGET_KEYS[key_name]
 
@@ -452,7 +456,7 @@ def main() -> None:
     print("   * Shift + Volume Down -> Timeline Jog Left  (Left Arrow)")
     print("   * Ctrl + Volume Up    -> Color Scrub Up     (Drag +15px)")
     print("   * Ctrl + Volume Down  -> Color Scrub Down   (Drag -15px)")
-    print("   * Volume Mute         -> Play / Pause       (Space)")
+    print("   * Volume Mute         -> Play/Pause (Space) [Edit] / Reset (Middle Click) [Color]")
     print(" When other windows are active:")
     print("   * Volume keys pass through to Windows system audio normally.")
     print("-" * 70)
