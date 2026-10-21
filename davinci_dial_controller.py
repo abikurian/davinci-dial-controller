@@ -18,8 +18,10 @@ Acts as a background macro controller for media dials / volume knobs:
         * Passthrough -> Default Windows volume and mute controls
 """
 
-import atexit
+import os
 import sys
+import json
+import atexit
 import time
 import queue
 import threading
@@ -29,6 +31,36 @@ from ctypes import wintypes
 
 import keyboard
 import pyautogui
+
+
+# ---------------------------------------------------------
+# Configuration Loader
+# ---------------------------------------------------------
+def load_config():
+    default_config = {
+        "micro_drag_pixels": 15,
+        "shortcuts": {
+            "edit_page": {"zoom_in": ["ctrl", "="], "zoom_out": ["ctrl", "-"]},
+            "color_page": {"primary_wheels": ["shift", "z"], "log_wheels": ["shift", "x"]}
+        },
+        "preferences": {"default_workspace": "edit"}
+    }
+    try:
+        if os.path.exists("config.json"):
+            with open("config.json", "r") as f:
+                return json.load(f)
+        config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
+        if os.path.exists(config_path):
+            with open(config_path, "r") as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return default_config
+
+
+config = load_config()
+micro_drag_pixels = config.get("micro_drag_pixels", 15)
+last_rotate_time = 0
 
 # ---------------------------------------------------------
 # PyAutoGUI Configuration
@@ -95,7 +127,7 @@ TARGET_KEYS = {
 action_queue: queue.Queue = queue.Queue()
 
 # Workspace Mode State: "edit" (default) or "color"
-current_workspace: str = "edit"
+current_workspace: str = config.get("preferences", {}).get("default_workspace", "edit")
 
 
 def set_workspace(mode: str) -> None:
@@ -163,24 +195,33 @@ def action_worker() -> None:
                 # DaVinci Resolve Timeline Zoom Out: Ctrl + -
                 pyautogui.hotkey("ctrl", "-")
                 action_desc = "Timeline Zoom Out [Ctrl + -]"
-            elif action_type == "hover_scrub_up":
-                # Universal Color Grading Click-and-Drag Scrub Up (+15px)
+            elif action_type in ("hover_scrub_up", "hover_scrub_down"):
+                # Universal Color Grading Click-and-Drag Scrub Up / Down with dynamic speed multiplier
                 # Note: No modifier release here so Ctrl state remains uninterrupted
+                global last_rotate_time
+                current_time = time.time()
+                time_diff = current_time - last_rotate_time
+                last_rotate_time = current_time
+
+                multiplier = 1
+                if time_diff < 0.05:
+                    multiplier = 3  # Fast spin
+                elif time_diff < 0.15:
+                    multiplier = 2  # Medium spin
+
+                # Apply the multiplier to the drag distance
+                actual_drag = micro_drag_pixels * multiplier
+
                 start_x, start_y = pyautogui.position()
                 pyautogui.mouseDown(button="left")
-                pyautogui.moveTo(start_x + 15, start_y)
+                if action_type == "hover_scrub_up":
+                    pyautogui.moveTo(start_x + actual_drag, start_y)
+                    action_desc = f"Color Scrub Up [Drag +{actual_drag}px]"
+                else:
+                    pyautogui.moveTo(start_x - actual_drag, start_y)
+                    action_desc = f"Color Scrub Down [Drag -{actual_drag}px]"
                 pyautogui.mouseUp(button="left")
                 pyautogui.moveTo(start_x, start_y)
-                action_desc = "Color Scrub Up [Drag +15px]"
-            elif action_type == "hover_scrub_down":
-                # Universal Color Grading Click-and-Drag Scrub Down (-15px)
-                # Note: No modifier release here so Ctrl state remains uninterrupted
-                start_x, start_y = pyautogui.position()
-                pyautogui.mouseDown(button="left")
-                pyautogui.moveTo(start_x - 15, start_y)
-                pyautogui.mouseUp(button="left")
-                pyautogui.moveTo(start_x, start_y)
-                action_desc = "Color Scrub Down [Drag -15px]"
             elif action_type == "jog_right":
                 # Momentarily release shift so DaVinci does not treat Shift+Right as fast-jog / cut jump
                 is_rshift = keyboard.is_pressed('right shift')
